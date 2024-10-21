@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Canvas</title>
+    <link rel="icon" href="Prof.png" type="image/png">
+    <script src="https://kit.fontawesome.com/80b5e04a21.js" crossorigin="anonymous"></script>
+    <style>
+        html, body{
+            height: 100%;
+            margin: 0;
+            background-image:url(https://i.pinimg.com/564x/be/90/c0/be90c01affbc63b762c73f63951900da.jpg);
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position:center;
+            background-size: cover;
+        }
+        #Title_Button{
+            margin-right: auto;
+            margin-left: auto;
+            width: 50%;
+            position: sticky;
+            top: 15px;
+            text-align: center;
+            background-color: #303030;
+            color: aqua;
+            border-style: double;
+            border-radius: 20px;
+            border-width: 5px;
+        }
+        #Title_Button:hover{
+            background-color: #404040;
+            border-style: solid;
+        }
+        #Title_Button:active{
+            background-color: cyan;
+            color: #404040;
+            border-color: rgb(0, 168, 168);
+            border-style: double;
+        }
+        a{
+            text-decoration: none;
+        }
+        footer{
+            margin-top: 20px;
+            color: cyan;
+            font-family: 'Times New Roman', Times, serif;
+            background-color: #303030;
+            text-align: center;
+            padding: 0px;
+            position: sticky;
+            bottom: 1px;
+            clear: left;
+        }
+        .container{
+            border-radius: 10px;
+            margin: 0 auto;  /* Center the container */
+            margin-top: 50px;
+            width: 78%;      /* Ensure it's 80% of the screen width */
+            display: flex;
+            justify-content: space-evenly;  /* Spread items evenly, with equal space */
+            flex-wrap: wrap;  /* Allows wrapping of items if screen is too small */
+            padding: 0;       /* Remove any unnecessary padding */
+            box-sizing: border-box;
+            animation: glow 10s ease-in-out infinite;
+        }
+        .app-icon{
+            color: #1a1a2e;
+            -webkit-text-stroke: 1px cyan;
+            display: flex;
+            justify-content: center;
+            justify-items: center;
+            text-shadow: 2px 2px 5px cyan;
+            height: 120px;
+            width: 120px;
+            font-size: 75px;
+            line-height: 100px;
+            transition: 0.3s ease;
+        }
+        .app-icon:hover{
+            font-size: 90px;
+            text-shadow: 0px 0px 20px cyan;
+            background: linear-gradient(to bottom, transparent, cyan, transparent);
+            border: solid cyan;
+            border-radius: 5%;
+        }
+        .app-icon:active{
+            background: cyan;
+        }
+        .app-name{
+            font-family: sans-serif;
+            font-weight: bold;
+            color: transparent;
+            display: flex;
+            justify-content: center;
+            justify-items: center;
+            font-size: 10px;
+            transform: translateY(-50px);
+            transition: 0.3s ease;
+        }
+        .apps:hover .app-name{
+            -webkit-text-stroke: 1px #1a1a2e;
+            color: cyan;
+            transform: translateY(-25px);
+            font-size: 20px;
+        }
+        @keyframes glow{
+            0%{
+                box-shadow: -5px -10px 10px cyan;
+            }
+            25%{
+                box-shadow: 10px -5px 10px cyan;
+            }
+            50%{
+                box-shadow: -5px 10px 10px cyan;
+            }
+            75%{
+                box-shadow: -10px -5px 10px cyan;
+            }
+            100%{
+                box-shadow: -5px -10px 10px cyan;
+            }
+        }
+    </style>
+</head>
+    
+<body>
+    <main>
+        <h1 id="Title_Button">App Canvas</h1> 
+        <div class="container">
+                <a href="https://youtube.com/" target="_blank">
+                    <div class="apps">
+                        <i class="fa-brands fa-youtube app-icon"></i> 
+                        <span class="app-name">YouTube</span> 
+                    </div>
+                </a>
+                <a href="https://music.youtube.com/playlist?list=LM" target="_blank">
+                    <div class="apps">
+                        <i class="fa-regular fa-circle-play app-icon"></i>
+                        <span class="app-name">Music</span>
+                    </div>  
+                </a>  
+                <a href="https://obs.sabis.sakarya.edu.tr/Ders" target="_blank">
+                    <div class="apps">
+                        <i class="fa-solid fa-user-graduate app-icon"></i>
+                        <span class="app-name">Sabis</span>
+                    </div> 
+                </a> 
+                <a href="https://instagram.com/" target="_blank">
+                    <div class="apps">
+                        <i class="fa-brands fa-instagram app-icon"></i>
+                        <span class="app-name">Instagram</span>
+                    </div> 
+                </a> 
+                <a href="https://www.linkedin.com/feed/" target="_blank">
+                    <div class="apps">
+                        <i class="fa-brands fa-linkedin app-icon"></i>
+                        <span class="app-name">LinkedIn</span>
+                    </div>
+                </a>
+                <a href="https://www.google.com/search?q=google+translate&oq=google+transl&gs_lcrp=EgZjaHJvbWUqCQgAECMYJxiKBTIJCAAQIxgnGIoFMgYIARBFGDkyBwgCEAAYgAQyBwgDEAAYgAQyBwgEEAAYgAQyBwgFEAAYgAQyBwgGEAAYgAQyBwgHEAAYgAQyBwgIEAAYgAQyBwgJEAAYgATSAQgyMTIxajBqN6gCALACAA&sourceid=chrome&ie=UTF-8" target="_blank">
+                    <div class="apps">
+                        <i class="fa-solid fa-language app-icon"></i>
+                        <span class="app-name">Translate</span>
+                    </div>
+                </a>
+                <a href="https://photos.google.com/" target="_blank">
+                    <div class="apps">
+                        <i class="fa-solid fa-image app-icon"></i> 
+                        <span class="app-name">Photos</span> 
+                    </div>
+                </a>
+                <a href="https://tr.pinterest.com/" target="_blank">
+                    <div class="apps">
+                        <i class="fa-brands fa-pinterest app-icon"></i>
+                        <span class="app-name">Pinterest</span>
+                    </div>  
+                </a>  
+                <a href="https://www.facebook.com/" target="_blank">
+                    <div class="apps">
+                        <i class="fa-brands fa-facebook app-icon"></i>
+                        <span class="app-name">Facebook</span>
+                    </div> 
+                </a> 
+                <a href="https://web.whatsapp.com/" target="_blank">
+                    <div class="apps">
+                        <i class="fa-brands fa-whatsapp app-icon"></i>
+                        <span class="app-name">Whatsapp</span>
+                    </div>
+                </a>
+                <a href="https://mail.google.com/mail/u/0/#inbox" target="_blank">
+                    <div class="apps">
+                        <i class="fa-regular fa-envelope app-icon"></i>
+                        <span class="app-name">Gmail</span>
+                    </div>
+                </a>
+                <a href="https://drive.google.com/" target="_blank">
+                    <div class="apps">
+                        <i class="fa-brands fa-google-drive app-icon"></i> 
+                        <span class="app-name">Drive</span> 
+                    </div>
+                </a>
+                <a href="https://web.telegram.org/k/" target="_blank">
+                    <div class="apps">
+                        <i class="fa-brands fa-telegram app-icon"></i>
+                        <span class="app-name">Telegram</span>
+                    </div>  
+                </a>  
+                <a href="http://giris.wipoint.com.tr/logout?" target="_blank">
+                    <div class="apps">
+                        <i class="fa-solid fa-wifi app-icon"></i>
+                        <span class="app-name">Connection</span>
+                    </div> 
+                </a> 
+                <a href="https://x.com/home" target="_blank">
+                    <div class="apps">
+                        <i class="fa-brands fa-x-twitter app-icon"></i>
+                        <span class="app-name">X</span>
+                    </div>
+                </a>
+                <a href="https://chatgpt.com/" target="_blank">
+                    <div class="apps">
+                        <i class="fa-solid fa-comments app-icon"></i>
+                        <span class="app-name">ChatGPT</span>
+                    </div>
+                </a>
+                <a href="https://bireysel.ziraatbank.com.tr/Default.aspx" target="_blank">
+                    <div class="apps">
+                        <i class="fa-solid fa-money-check-dollar app-icon"></i> 
+                        <span class="app-name">Bank</span> 
+                    </div>
+                </a>
+                <a href="https://github.com/" target="_blank">
+                    <div class="apps">
+                        <i class="fa-brands fa-github app-icon"></i> 
+                        <span class="app-name">Github</span> 
+                    </div>
+                </a>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 App Canvas. All rights reserved.</p>
+    </footer>
+</body>
+</html>
