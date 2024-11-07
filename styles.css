@@ -1,0 +1,190 @@
+html, body{
+    height: 100%;
+    margin: 0;
+    background: #10396e;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position:center;
+    background-size: cover;
+}
+main{
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+#welcomeMsg {
+    position: fixed;
+    height: fit-content;
+    bottom: 20px;             /* Adjust distance from bottom */
+    left: 20px;              /* Adjust distance from right */
+    padding: 5px 15px;
+    border-radius: 10px;      /* Smooth rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Soft shadow */
+    color: #fff;           /* Match color scheme */
+    background-color: #5b1af311;
+    font-size: 14px;
+    font-family: monospace;
+    text-align: center;
+    opacity: 0.7;
+    transition: opacity 0.3s ease-in-out;
+    cursor: grab;
+    backdrop-filter: blur(5px);
+}
+#welcomeMsg:active{
+    cursor: grabbing;
+}
+#emoji {
+    font-size: 30px;                  /* Increase size to make it noticeable but not overwhelming */
+    animation: bounce 2s infinite;    /* Bouncing animation */
+    color: #ffd700;                   /* Warm golden color */
+    display: inline-block;
+    text-align: center;
+    margin-bottom: 5px;
+    transition: transform 0.2s;
+}
+
+/* Bouncing animation */
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+#welcomeMsg:hover {
+    opacity: 1; /* Brighter when hovered */
+}
+.welcomeMsgFly{
+    animation: fly 1s ease-in-out 1;
+}
+@keyframes fly{
+    to{
+        transform: translateY(-250px);
+        opacity: 0;
+    }
+}
+#welcomeMsg #goodTxt {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+#welcomeMsg #dateTxt,
+#welcomeMsg #timeTxt {
+    margin: 5px 0px;
+    font-size: 12px;
+}
+#box1{
+    position: fixed;
+    background-color: #fff;
+    width: 100%;
+    height: 120px;
+    border-radius: 50%;
+    transform: translateY(-60px);
+    margin: 0;
+}
+#Title_Button{
+    font-family: 'Brush Script MT', cursive;
+    margin-right: auto;
+    margin-left: auto;
+    width: 50%;
+    position: sticky;
+    top: 35px;
+    text-align: center;
+    background-color: #134585;
+    color: #ffffff;
+    border: solid #ffffff 2px;
+    border-radius: 17.5px;
+}
+a{
+    text-decoration: none;
+}
+footer{
+    font-size: 12px;
+    color: #134585;
+    font-family: 'Times New Roman', Times, serif;
+    background-color: #ffffff;
+    text-align: center;
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    bottom: 1px;
+    margin-top: 10px;
+    width: 100vw;
+    height: 15px;
+}
+.container{
+    border-radius: 10px;
+    margin-top: 40px;
+    width: 78%;      /* Ensure it's 80% of the screen width */
+    display: flex;
+    align-items: center;
+    justify-content: center;  /* Spread items evenly, with equal space */
+    flex-wrap: wrap;  /* Allows wrapping of items if screen is too small */
+    padding: 0px;       /* Remove any unnecessary padding */
+    box-sizing: border-box;
+}
+.apps {
+    display: flex;
+    flex-direction: column; /* Stack icon and text vertically */
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 140px;
+    text-align: center;
+}
+.app-icon{
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    justify-items: center;
+    height: 120px;
+    width: 120px;
+    font-size: 75px;
+    line-height: 100px;
+    transition: 0.3s ease;
+}
+.app-icon:hover{
+    font-size: 90px;
+    border-radius: 15%;
+}
+.app-icon:active{
+    background: #0b2848;
+}
+.app-name{
+    font-family: garamond;
+    font-weight: bold;
+    color: transparent;
+    display: flex;
+    justify-content: center;
+    justify-items: center;
+    font-size: 10px;
+    transform: translateY(-50px);
+    transition: 0.3s ease;
+}
+.apps:hover .app-name{
+    color: #ffffff;
+    transform: translateY(-25px);
+    font-size: 20px;
+}
+@keyframes glow{
+    0%{
+        box-shadow: -5px -10px 10px cyan;
+    }
+    25%{
+        box-shadow: 10px -5px 10px cyan;
+    }
+    50%{
+        box-shadow: -5px 10px 10px cyan;
+    }
+    75%{
+        box-shadow: -10px -5px 10px cyan;
+    }
+    100%{
+        box-shadow: -5px -10px 10px cyan;
+    }
+}
