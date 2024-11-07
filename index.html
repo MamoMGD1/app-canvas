@@ -5,133 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>App Canvas</title>
     <link rel="icon" href="Prof.png" type="image/png">
+    <link rel="stylesheet" href="styles.css">
     <script src="https://kit.fontawesome.com/80b5e04a21.js" crossorigin="anonymous"></script>
-    <style>
-        html, body{
-            height: 100%;
-            margin: 0;
-            background: #10396e;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            background-position:center;
-            background-size: cover;
-        }
-        #Title_Button{
-            font-family: 'Brush Script MT', cursive;
-            margin-right: auto;
-            margin-left: auto;
-            width: 50%;
-            position: sticky;
-            top: 35px;
-            text-align: center;
-            background-color: #134585;
-            color: #ffffff;
-            border: solid #ffffff 2px;
-            border-radius: 17.5px;
-        }
-        a{
-            text-decoration: none;
-        }
-        footer{
-            font-size: 12px;
-            margin-top: 20px;
-            color: #134585;
-            font-family: 'Times New Roman', Times, serif;
-            background-color: #ffffff;
-            text-align: center;
-            padding: 0px;
-            position: sticky;
-            bottom: 1px;
-            clear: left;
-        }
-        .container{
-            border-radius: 10px;
-            margin: 0 auto;  /* Center the container */
-            margin-top: 50px;
-            width: 78%;      /* Ensure it's 80% of the screen width */
-            display: flex;
-            justify-content: space-evenly;  /* Spread items evenly, with equal space */
-            flex-wrap: wrap;  /* Allows wrapping of items if screen is too small */
-            padding: 0;       /* Remove any unnecessary padding */
-            box-sizing: border-box;
-            //animation: glow 10s ease-in-out infinite;
-        }
-        .app-icon{
-            color: #ffffff;
-            //-webkit-text-stroke: 1px black;
-            display: flex;
-            justify-content: center;
-            justify-items: center;
-            //text-shadow: 2px 2px 5px black;
-            height: 120px;
-            width: 120px;
-            font-size: 75px;
-            line-height: 100px;
-            transition: 0.3s ease;
-        }
-        .app-icon:hover{
-            font-size: 90px;
-            //text-shadow: 0px 0px 20px cyan;
-            //background: linear-gradient(to bottom, transparent, cyan, transparent);
-            //border: solid #ffffff;
-            border-radius: 15%;
-        }
-        .app-icon:active{
-            background: #0b2848;
-        }
-        .app-name{
-            font-family: garamond;
-            font-weight: bold;
-            color: transparent;
-            display: flex;
-            justify-content: center;
-            justify-items: center;
-            font-size: 10px;
-            transform: translateY(-50px);
-            transition: 0.3s ease;
-        }
-        .apps:hover .app-name{
-            //-webkit-text-stroke: 1px #1a1a2e;
-            color: #ffffff;
-            transform: translateY(-25px);
-            font-size: 20px;
-        }
-        .box1{
-            width: 100%;
-            height: 150px;
-            margin-left: auto;
-            margin-right: auto;
-            margin-bottom: -137px;
-            transform: translateY(-80px);
-            background-color: #ffffff;
-            position: sticky;
-            border-radius: 50%;
-            top: 0px;
-        }
-        @keyframes glow{
-            0%{
-                box-shadow: -5px -10px 10px cyan;
-            }
-            25%{
-                box-shadow: 10px -5px 10px cyan;
-            }
-            50%{
-                box-shadow: -5px 10px 10px cyan;
-            }
-            75%{
-                box-shadow: -10px -5px 10px cyan;
-            }
-            100%{
-                box-shadow: -5px -10px 10px cyan;
-            }
-        }
-    </style>
 </head>
     
 <body>
+    <div id="box1"></div>
     <main>
-        <div class="box1"></div>
         <h1 id="Title_Button">App Canvas</h1> 
+        <div id="welcomeMsg" ondblclick="fly()">
+            <div id="emoji">😊</div>
+            <div id="goodTxt">Good Morning</div>
+            <div id="dateTxt">12 Feb, 2024</div>
+            <div id="timeTxt">14:56:32</div>
+        </div>
         <div class="container">
                 <a href="http://giris.wipoint.com.tr/logout?" target="_blank">
                     <div class="apps">
@@ -246,5 +133,90 @@
     <footer>
         <p>&copy; 2024 App Canvas. All rights reserved.</p>
     </footer>
+    <script>
+        const welcomeMsg = document.getElementById("welcomeMsg");
+        const emoji = document.getElementById("emoji");
+        const goodTxt = document.getElementById("goodTxt");
+        const dateTxt = document.getElementById("dateTxt");
+        const timeTxt = document.getElementById("timeTxt");
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        makeDraggable(welcomeMsg);
+        function fly(){
+            welcomeMsg.classList.add("welcomeMsgFly");
+            setTimeout(() => {
+                welcomeMsg.style.display = "none";
+            }, 1000);
+        }
+        function showMsg(){
+            const systemDate = new Date();
+            dateTxt.textContent = `${weekDays[systemDate.getDay()]}, ${months[systemDate.getMonth()]} ${systemDate.getDate()}, ${systemDate.getFullYear()}`;
+            timeTxt.textContent = `${String(systemDate.getHours()).padStart(2,'0')}:${String(systemDate.getMinutes()).padStart(2, '0')}:${String(systemDate.getSeconds()).padStart(2, '0')}`;
+            if(systemDate.getHours() >= 0 && systemDate.getHours() < 6){
+                goodTxt.textContent = "Time To Sleep";
+                emoji.textContent = "😪";
+            }
+            else if(systemDate.getHours() >= 6 && systemDate.getHours() < 11){
+                goodTxt.textContent = "Good Morning";
+                emoji.textContent = "😋";
+            }
+            else if(systemDate.getHours() >=11 && systemDate.getHours() < 14){
+                goodTxt.textContent = "Good Noon";
+                emoji.textContent = "😎";
+            }
+            else if(systemDate.getHours() >=14 && systemDate.getHours() < 20){
+                goodTxt.textContent = "Good Evening";
+                emoji.textContent = "😏";
+            }
+            else if(systemDate.getHours() >=20 && systemDate.getHours() < 24){
+                goodTxt.textContent = "Good Night";
+                emoji.textContent = "😴";
+            }
+        }
+        document.addEventListener("DOMContentLoaded", function(){
+            showMsg();
+            setInterval(() => {
+                showMsg();
+            }, 1000);
+        });
+        function makeDraggable(element) {
+            let offsetX = 0, offsetY = 0;
+
+            function dragStart(event) {
+                event.preventDefault();
+
+                // Calculate offsets to keep the drag smooth
+                offsetX = event.clientX - element.getBoundingClientRect().left;
+                offsetY = event.clientY - element.getBoundingClientRect().top;
+
+                // Attach event listeners for dragging and ending the drag
+                document.addEventListener('mousemove', drag);
+                document.addEventListener('mouseup', dragEnd);
+            }
+
+            function drag(event) {
+                event.preventDefault();
+
+                // Calculate the new position, relative to the viewport
+                const x = event.clientX - offsetX;
+                const y = event.clientY - offsetY;
+
+                // Apply the fixed positioning with new coordinates
+                element.style.position = 'fixed';
+                element.style.left = `${x}px`;
+                element.style.top = `${y}px`;
+            }
+
+            function dragEnd() {
+                // Remove event listeners when the drag ends
+                document.removeEventListener('mousemove', drag);
+                document.removeEventListener('mouseup', dragEnd);
+            }
+
+            // Start drag action on mousedown
+            element.addEventListener('mousedown', dragStart);
+        }
+
+    </script>
 </body>
 </html>
