@@ -182,39 +182,62 @@
         function makeDraggable(element) {
             let offsetX = 0, offsetY = 0;
 
+            // Function to handle the start of drag on both mouse and touch
             function dragStart(event) {
                 event.preventDefault();
 
-                // Calculate offsets to keep the drag smooth
-                offsetX = event.clientX - element.getBoundingClientRect().left;
-                offsetY = event.clientY - element.getBoundingClientRect().top;
+                // Check if it's a touch event
+                const isTouchEvent = event.type === 'touchstart';
 
-                // Attach event listeners for dragging and ending the drag
-                document.addEventListener('mousemove', drag);
-                document.addEventListener('mouseup', dragEnd);
+                // Calculate the initial offset
+                if (isTouchEvent) {
+                    offsetX = event.touches[0].clientX - element.getBoundingClientRect().left;
+                    offsetY = event.touches[0].clientY - element.getBoundingClientRect().top;
+                } else {
+                    offsetX = event.clientX - element.getBoundingClientRect().left;
+                    offsetY = event.clientY - element.getBoundingClientRect().top;
+                }
+
+                // Attach appropriate event listeners based on device type
+                if (isTouchEvent) {
+                    document.addEventListener('touchmove', drag);
+                    document.addEventListener('touchend', dragEnd);
+                } else {
+                    document.addEventListener('mousemove', drag);
+                    document.addEventListener('mouseup', dragEnd);
+                }
             }
 
+            // Function to handle the drag movement on both mouse and touch
             function drag(event) {
                 event.preventDefault();
 
-                // Calculate the new position, relative to the viewport
-                const x = event.clientX - offsetX;
-                const y = event.clientY - offsetY;
+                const isTouchEvent = event.type === 'touchmove';
+                const x = isTouchEvent ? event.touches[0].clientX - offsetX : event.clientX - offsetX;
+                const y = isTouchEvent ? event.touches[0].clientY - offsetY : event.clientY - offsetY;
 
-                // Apply the fixed positioning with new coordinates
+                // Apply the fixed position with new coordinates
                 element.style.position = 'fixed';
                 element.style.left = `${x}px`;
                 element.style.top = `${y}px`;
             }
 
-            function dragEnd() {
-                // Remove event listeners when the drag ends
-                document.removeEventListener('mousemove', drag);
-                document.removeEventListener('mouseup', dragEnd);
+            // Function to handle the end of drag on both mouse and touch
+            function dragEnd(event) {
+                const isTouchEvent = event.type === 'touchend';
+
+                if (isTouchEvent) {
+                    document.removeEventListener('touchmove', drag);
+                    document.removeEventListener('touchend', dragEnd);
+                } else {
+                    document.removeEventListener('mousemove', drag);
+                    document.removeEventListener('mouseup', dragEnd);
+                }
             }
 
-            // Start drag action on mousedown
+            // Add event listeners for both mouse and touch start events
             element.addEventListener('mousedown', dragStart);
+            element.addEventListener('touchstart', dragStart);
         }
 
     </script>
