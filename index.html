@@ -13,7 +13,7 @@
     <div id="box1"></div>
     <main>
         <h1 id="Title_Button">App Canvas</h1> 
-        <div id="welcomeMsg" ondblclick="fly()" ontouchend="fly()">
+        <div id="welcomeMsg" ondblclick="fly()">
             <div id="emoji">😊</div>
             <div id="goodTxt">Good Morning</div>
             <div id="dateTxt">12 Feb, 2024</div>
@@ -142,6 +142,15 @@
         const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         const weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         makeDraggable(welcomeMsg);
+        let lastTap = 0;
+        welcomeMsg.addEventListener("touchend", function () {
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTap;
+            if (tapLength < 300 && tapLength > 0) { // Detects double-tap if within 300ms
+                fly();
+            }
+            lastTap = currentTime;
+        });
         function fly(){
             welcomeMsg.classList.add("welcomeMsgFly");
             setTimeout(() => {
