@@ -13,131 +13,27 @@
     <div id="box1"></div>
     <main>
         <h1 id="Title_Button">App Canvas</h1> 
+        <div id="settings">
+            <div class="cont" onclick="addLink(appsArray)" style="margin-right: 1px;">
+                <div class="exp">Add Link</div>
+                <div class="fa-solid fa-plus opt"></div>
+            </div>
+            <div class="cont" onclick="restore()">
+                <div class="exp">Restore Default</div>
+                <div class="fa-solid fa-rotate-left opt"></div>
+            </div>
+        </div>
         <div id="welcomeMsg" ondblclick="fly()">
             <div id="emoji">😊</div>
             <div id="goodTxt">Good Morning</div>
             <div id="dateTxt">12 Feb, 2024</div>
             <div id="timeTxt">14:56:32</div>
         </div>
-        <div class="container">
-                <a href="http://giris.wipoint.com.tr/logout?" target="_blank">
-                    <div class="apps">
-                        <i class="fa-solid fa-wifi app-icon"></i>
-                        <span class="app-name">Connection</span>
-                    </div> 
-                </a>  
-                <a href="https://web.whatsapp.com/" target="_blank">
-                    <div class="apps">
-                        <i class="fa-brands fa-whatsapp app-icon"></i>
-                        <span class="app-name">Whatsapp</span>
-                    </div>
-                </a>
-                <a href="https://obs.sabis.sakarya.edu.tr/Ders" target="_blank">
-                    <div class="apps">
-                        <i class="fa-solid fa-user-graduate app-icon"></i>
-                        <span class="app-name">Sabis</span>
-                    </div> 
-                </a> 
-                <a href="https://web.telegram.org/k/" target="_blank">
-                    <div class="apps">
-                        <i class="fa-brands fa-telegram app-icon"></i>
-                        <span class="app-name">Telegram</span>
-                    </div>  
-                </a>  
-                <a href="https://mamomgd1.github.io/encoder/" target="_blank">
-                    <div class="apps">
-                        <i class="fa-solid fa-hat-cowboy-side app-icon"></i>
-                        <span class="app-name">Encoder</span>
-                    </div>  
-                </a>  
-                <a href="https://drive.google.com/" target="_blank">
-                    <div class="apps">
-                        <i class="fa-brands fa-google-drive app-icon"></i> 
-                        <span class="app-name">Drive</span> 
-                    </div>
-                </a>
-                <a href="https://mail.google.com/mail/u/0/#inbox" target="_blank">
-                    <div class="apps">
-                        <i class="fa-regular fa-envelope app-icon"></i>
-                        <span class="app-name">Gmail</span>
-                    </div>
-                </a>
-                <a href="https://music.youtube.com/playlist?list=LM" target="_blank">
-                    <div class="apps">
-                        <i class="fa-regular fa-circle-play app-icon"></i>
-                        <span class="app-name">Music</span>
-                    </div>  
-                </a>  
-                <a href="https://youtube.com/" target="_blank">
-                    <div class="apps">
-                        <i class="fa-brands fa-youtube app-icon"></i> 
-                        <span class="app-name">YouTube</span> 
-                    </div>
-                </a>
-                <a href="https://translate.google.com/?sl=en&tl=tr&op=translate" target="_blank">
-                    <div class="apps">
-                        <i class="fa-solid fa-language app-icon"></i>
-                        <span class="app-name">Translate</span>
-                    </div>
-                </a>
-                <a href="https://www.linkedin.com/feed/" target="_blank">
-                    <div class="apps">
-                        <i class="fa-brands fa-linkedin app-icon"></i>
-                        <span class="app-name">LinkedIn</span>
-                    </div>
-                </a>
-                <a href="https://chatgpt.com/" target="_blank">
-                    <div class="apps">
-                        <i class="fa-solid fa-microchip app-icon"></i>
-                        <span class="app-name">ChatGPT</span>
-                    </div>
-                </a>
-                <a href="https://photos.google.com/" target="_blank">
-                    <div class="apps">
-                        <i class="fa-solid fa-image app-icon"></i> 
-                        <span class="app-name">Photos</span> 
-                    </div>
-                </a>
-                <a href="https://tr.pinterest.com/" target="_blank">
-                    <div class="apps">
-                        <i class="fa-brands fa-pinterest app-icon"></i>
-                        <span class="app-name">Pinterest</span>
-                    </div>  
-                </a>  
-                <a href="https://www.facebook.com/" target="_blank">
-                    <div class="apps">
-                        <i class="fa-brands fa-facebook app-icon"></i>
-                        <span class="app-name">Facebook</span>
-                    </div> 
-                </a>
-                <a href="https://x.com/home" target="_blank">
-                    <div class="apps">
-                        <i class="fa-brands fa-x-twitter app-icon"></i>
-                        <span class="app-name">X</span>
-                    </div>
-                </a>
-                <a href="https://instagram.com/" target="_blank">
-                    <div class="apps">
-                        <i class="fa-brands fa-instagram app-icon"></i>
-                        <span class="app-name">Instagram</span>
-                    </div> 
-                </a>
-                <a href="https://bireysel.ziraatbank.com.tr/Default.aspx" target="_blank">
-                    <div class="apps">
-                        <i class="fa-solid fa-money-check-dollar app-icon"></i> 
-                        <span class="app-name">Bank</span> 
-                    </div>
-                </a>
-                <a href="https://github.com/" target="_blank">
-                    <div class="apps">
-                        <i class="fa-brands fa-github app-icon"></i> 
-                        <span class="app-name">Github</span> 
-                    </div>
-                </a>
+        <div id="container" class="container">
         </div>
     </main>
     <footer>
-        <p>&copy; 2024 App Canvas. All rights reserved.</p>
+        <p>© 2024 App Canvas. All rights reserved.</p>
     </footer>
     <script>
         const welcomeMsg = document.getElementById("welcomeMsg");
@@ -147,6 +43,7 @@
         const timeTxt = document.getElementById("timeTxt");
         const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         const weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        let appsArray;
         makeDraggable(welcomeMsg);
         let lastTap = 0;
         welcomeMsg.addEventListener("touchend", function () {
@@ -189,12 +86,264 @@
                 emoji.textContent = "😴";
             }
         }
-        document.addEventListener("DOMContentLoaded", function(){
+        
+        function fillPage() {
+            // Check localStorage first
+            let appsData = localStorage.getItem('appOrder');
+            appsArray = appsData ? JSON.parse(appsData) : [
+                { name: "Connection", link: "http://giris.wipoint.com.tr/logout?", icon: "fa-solid fa-wifi" },
+                { name: "Whatsapp", link: "https://web.whatsapp.com/", icon: "fa-brands fa-whatsapp" },
+                { name: "Sabis", link: "https://obs.sabis.sakarya.edu.tr/Ders", icon: "fa-solid fa-user-graduate" },
+                { name: "Telegram", link: "https://web.telegram.org/k/", icon: "fa-brands fa-telegram" },
+                { name: "Encoder", link: "https://mamomgd1.github.io/encoder/", icon: "fa-solid fa-hat-cowboy-side" },
+                { name: "Drive", link: "https://drive.google.com/", icon: "fa-brands fa-google-drive" },
+                { name: "Gmail", link: "https://mail.google.com/mail/u/0/#inbox", icon: "fa-regular fa-envelope" },
+                { name: "Music", link: "https://music.youtube.com/playlist?list=LM", icon: "fa-regular fa-circle-play" },
+                { name: "YouTube", link: "https://youtube.com/", icon: "fa-brands fa-youtube" },
+                { name: "Translate", link: "https://translate.google.com/?sl=en&tl=tr&op=translate", icon: "fa-solid fa-language" },
+                { name: "LinkedIn", link: "https://www.linkedin.com/feed/", icon: "fa-brands fa-linkedin" },
+                { name: "ChatGPT", link: "https://chatgpt.com/", icon: "fa-solid fa-microchip" },
+                { name: "Photos", link: "https://photos.google.com/", icon: "fa-solid fa-image" },
+                { name: "Pinterest", link: "https://tr.pinterest.com/", icon: "fa-brands fa-pinterest" },
+                { name: "Facebook", link: "https://www.facebook.com/", icon: "fa-brands fa-facebook" },
+                { name: "X", link: "https://x.com/home", icon: "fa-brands fa-x-twitter" },
+                { name: "Instagram", link: "https://instagram.com/", icon: "fa-brands fa-instagram" },
+                { name: "Github", link: "https://github.com/", icon: "fa-brands fa-github" },
+                { name: "Duolingo", link: "https://www.duolingo.com/learn", icon: "fa-solid fa-comment-nodes" },
+                { name: "Grok", link: "https://grok.com/", icon: "fa-solid fa-user-astronaut" },
+                { name: "DeepSeek", link: "https://chat.deepseek.com/", icon: "fa-solid fa-otter" }
+            ];
+
+            const container = document.getElementById('container');
+            container.innerHTML = ''; // Clear any existing apps
+
+            appsArray.forEach((appData, index) => {
+                const app = document.createElement('a');
+                app.href = appData.link;
+                app.target = '_blank';
+                app.dataset.index = index; // Track position
+                app.classList.add('app-item');
+                app.innerHTML = `
+                    <div class="apps">
+                        <i class='${appData.icon} app-icon'></i>
+                        <span class="app-name">${appData.name}</span>
+                    </div>
+                `;
+                container.appendChild(app);
+
+                // Add long press + drag functionality
+                enableSwap(app, appsArray);
+            });
+        }
+
+        // Enables long press drag + insert
+        function enableSwap(app, appsArray) {
+            let holdTimer;
+            let isDragging = false;
+            let offsetX, offsetY;
+
+            app.addEventListener('mousedown', startHold);
+            app.addEventListener('touchstart', startHold, { passive: false });
+            app.addEventListener('mouseup', cancelHold);
+            app.addEventListener('mouseleave', cancelHold);
+            app.addEventListener('touchend', cancelHold);
+
+            function startHold(e) {
+                e.preventDefault();
+                holdTimer = setTimeout(() => {
+                    isDragging = true;
+                    app.classList.add('dragging');
+                    app.style.position = 'absolute';
+                    app.style.zIndex = '1000';
+                    const rect = app.getBoundingClientRect();
+                    // Center the app under the cursor
+                    const clientX = e.clientX || e.touches[0].clientX;
+                    const clientY = e.clientY || e.touches[0].clientY;
+                    offsetX = rect.width / 2;
+                    offsetY = rect.height / 2;
+                    app.style.left = (clientX - offsetX) + 'px';
+                    app.style.top = (clientY - offsetY) + 'px';
+
+                    document.addEventListener('mousemove', moveAt);
+                    document.addEventListener('mouseup', onDrop);
+                    document.addEventListener('touchmove', moveAt, { passive: false });
+                    document.addEventListener('touchend', onDrop);
+                }, 500);
+            }
+
+            function moveAt(e) {
+                e.preventDefault();
+                let clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                let clientY = e.clientY || (e.touches && e.touches[0].clientY);
+                app.style.left = (clientX - offsetX) + 'px';
+                app.style.top = (clientY - offsetY) + 'px';
+            }
+
+            function cancelHold() {
+                clearTimeout(holdTimer);
+            }
+
+            function onDrop(e) {
+                if (!isDragging) return;
+
+                document.removeEventListener('mousemove', moveAt);
+                document.removeEventListener('mouseup', onDrop);
+                document.removeEventListener('touchmove', moveAt);
+                document.removeEventListener('touchend', onDrop);
+
+                app.style.position = '';
+                app.style.zIndex = '';
+                app.style.left = '';
+                app.style.top = '';
+                app.classList.remove('dragging');
+
+                // Find the app under the drop position
+                let clientX = e.clientX || (e.changedTouches && e.changedTouches[0].clientX);
+                let clientY = e.clientY || (e.changedTouches && e.changedTouches[0].clientY);
+                app.style.display = 'none'; // Temporarily hide to avoid self-detection
+                const target = document.elementFromPoint(clientX, clientY);
+                app.style.display = '';
+
+                const nearest = target.closest('.app-item');
+                if (nearest && nearest !== app) {
+                    let appIndex = +app.dataset.index;
+                    let targetIndex = +nearest.dataset.index;
+
+                    // Remove the dragged app from its original position
+                    const [draggedApp] = appsArray.splice(appIndex, 1);
+                    // Insert it at the target position
+                    appsArray.splice(targetIndex, 0, draggedApp);
+
+                    // Save to localStorage
+                    localStorage.setItem('appOrder', JSON.stringify(appsArray));
+
+                    // Refill UI
+                    fillPage();
+                }
+
+                isDragging = false;
+            }
+        }
+        function restore() {
+            // Create overlay for blurred background
+            const overlay = document.createElement('div');
+            overlay.className = 'popup-overlay';
+            document.body.appendChild(overlay);
+
+            // Create pop-up container
+            const popup = document.createElement('div');
+            popup.className = 'popup';
+            popup.innerHTML = `
+                <h2 style="border-bottom: solid 1px #10396e; padding-bottom: 5px">Restore Default Settings</h2>
+                <p style="font-family: Arial">Are you sure you want to restore to the default settings?</p>
+                <div class="button-group">
+                    <button class="exit-btn">No</button>
+                    <button class="add-btn">Yes</button>
+                </div>
+            `;
+            document.body.appendChild(popup);
+
+            // Get buttons
+            const noBtn = popup.querySelector('.exit-btn');
+            const yesBtn = popup.querySelector('.add-btn');
+
+            // Close pop-up function
+            function closePopup() {
+                popup.remove();
+                overlay.remove();
+                document.body.style.overflow = ''; // Restore scrolling
+            }
+
+            // Event listeners for closing
+            noBtn.addEventListener('click', closePopup);
+            overlay.addEventListener('click', closePopup);
+
+            // Yes button functionality
+            yesBtn.addEventListener('click', () => {
+                localStorage.removeItem('appOrder'); // Clear only appOrder
+                fillPage();
+                closePopup();
+            });
+
+            // Prevent body scrolling while pop-up is open
+            document.body.style.overflow = 'hidden';
+        }
+        function addLink(appsArray) {
+            // Create overlay for blurred background
+            const overlay = document.createElement('div');
+            overlay.className = 'popup-overlay';
+            document.body.appendChild(overlay);
+
+            // Create pop-up container
+            const popup = document.createElement('div');
+            popup.className = 'popup';
+            popup.innerHTML = `
+                <h2>Add New App</h2>
+                <div class="input-group">
+                    <label for="app-name">App Name</label>
+                    <input type="text" id="app-name" placeholder="Enter app name" />
+                </div>
+                <div class="input-group">
+                    <label for="app-link">App Link</label>
+                    <input type="text" id="app-link" placeholder="Enter app URL" />
+                </div>
+                <div class="button-group">
+                    <button class="exit-btn">Exit</button>
+                    <button class="add-btn" disabled>Add</button>
+                </div>
+            `;
+            document.body.appendChild(popup);
+
+            // Get elements
+            const nameInput = document.getElementById('app-name');
+            const linkInput = document.getElementById('app-link');
+            const addBtn = popup.querySelector('.add-btn');
+            const exitBtn = popup.querySelector('.exit-btn');
+
+            // Enable/disable Add button based on input
+            function checkInputs() {
+                addBtn.disabled = !nameInput.value.trim() || !linkInput.value.trim();
+            }
+            nameInput.addEventListener('input', checkInputs);
+            linkInput.addEventListener('input', checkInputs);
+
+            // Close pop-up function
+            function closePopup() {
+                popup.remove();
+                overlay.remove();
+                document.body.style.overflow = ''; // Restore scrolling
+            }
+
+            // Event listeners for closing
+            exitBtn.addEventListener('click', closePopup);
+            overlay.addEventListener('click', closePopup);
+
+            // Add button functionality
+            addBtn.addEventListener('click', () => {
+                const newApp = {
+                    name: nameInput.value.trim(),
+                    link: linkInput.value.trim(),
+                    icon: 'fa-solid fa-link' // Default icon
+                };
+                appsArray.push(newApp);
+                localStorage.setItem('appOrder', JSON.stringify(appsArray));
+                fillPage();
+                closePopup();
+            });
+
+            // Prevent body scrolling while pop-up is open
+            document.body.style.overflow = 'hidden';
+
+            // Focus on name input
+            nameInput.focus();
+        }
+        // Call fillPage after DOM is loaded
+        document.addEventListener("DOMContentLoaded", function() {
             showMsg();
-            setInterval(() => {
-                showMsg();
-            }, 1000);
+            setInterval(showMsg, 1000);
+            fillPage();
         });
+
         function makeDraggable(element) {
             let offsetX = 0, offsetY = 0;
 
@@ -250,12 +399,11 @@
                     document.removeEventListener('mouseup', dragEnd);
                 }
             }
-
+            
             // Add event listeners for both mouse and touch start events
             element.addEventListener('mousedown', dragStart);
             element.addEventListener('touchstart', dragStart);
         }
-
     </script>
 </body>
 </html>
