@@ -13,6 +13,41 @@ main{
     align-items: center;
     flex-direction: column;
 }
+#settings{
+    color: #fff;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    right: 50px;
+    top: 75px;
+    transform: scale(1.5);
+}
+.cont{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    cursor: pointer;
+}
+.opt{
+    opacity: 75%;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+.exp{
+    font-family: sans-serif;
+    font-size: 8px;
+    z-index: -1;
+    transform: translateX(30px) scale(0.01);
+    transition: all 0.2s ease-in-out;
+}
+.cont:hover .opt{
+    transform: scale(1.5);
+    opacity: 100%;
+}
+.cont:hover .exp{
+    transform: translateX(-10px) scale(1);
+}
 #welcomeMsg {
     position: fixed;
     height: fit-content;
@@ -171,6 +206,10 @@ footer{
     transform: translateY(-25px);
     font-size: 20px;
 }
+.dragging {
+    opacity: 0.7;
+    cursor: grabbing;
+}
 @keyframes glow{
     0%{
         box-shadow: -5px -10px 10px cyan;
@@ -187,4 +226,100 @@ footer{
     100%{
         box-shadow: -5px -10px 10px cyan;
     }
+}
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    z-index: 999;
+}
+
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 400px;
+    z-index: 1000;
+    color: #000;
+}
+
+.popup h2 {
+    margin: 0 0 20px;
+    color: #10396e;
+    text-align: center;
+    font-size: 1.5em;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #10396e;
+    font-weight: bold;
+}
+
+.input-group input {
+    width: 95%;
+    padding: 10px;
+    border: 1px solid #10396e;
+    border-radius: 5px;
+    font-size: 1em;
+    color: #000;
+    background: #fff;
+}
+
+.input-group input::placeholder {
+    color: #999;
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.exit-btn, .add-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.exit-btn {
+    background: #ccc;
+    color: #000;
+}
+
+.exit-btn:hover {
+    background: #bbb;
+}
+
+.add-btn {
+    background: #10396e;
+    color: #fff;
+}
+
+.add-btn:hover:not(:disabled) {
+    background: #0a2a5a;
+}
+
+.add-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
 }
