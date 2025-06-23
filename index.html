@@ -263,7 +263,7 @@
                 <div class="button-group">
                     <button class="exit-btn">Cancel</button>
                     <button class="add-btn" disabled>Save</button>
-                    <button class="exit-btn">Delete</button>
+                    <button class="exit-btn" id="delete-btn">Delete</button>
                 </div>
             `;
             document.body.appendChild(popup);
@@ -273,7 +273,7 @@
             const linkInput = document.getElementById('app-link');
             const iconInput = document.getElementById('app-icon');
             const saveBtn = popup.querySelector('.add-btn');
-            const deleteBtn = popup.querySelector('.delete-btn');
+            const deleteBtn = document.getElementById('delete-btn');
             const cancelBtn = popup.querySelector('.exit-btn');
 
             // Enable/disable Save button based on input
