@@ -131,8 +131,14 @@
                 `;
                 container.appendChild(app);
 
-                // Add long press + drag functionality
+                // Add long press + drag functionality and edit option
                 enableSwap(app, appsArray);
+                if (!('ontouchstart' in window)) { // Only for non-touch devices
+                    app.addEventListener('contextmenu', (e) => {
+                        e.preventDefault();
+                        editLink(appsArray, index);
+                    });
+                }
             });
         }
 
@@ -143,13 +149,15 @@
             let offsetX, offsetY;
 
             app.addEventListener('mousedown', startHold);
-            app.addEventListener('touchstart', startHold, { passive: false });
+            app.addEventListener('touchstart', startHold, { passive: true });
             app.addEventListener('mouseup', cancelHold);
             app.addEventListener('mouseleave', cancelHold);
             app.addEventListener('touchend', cancelHold);
 
             function startHold(e) {
-                e.preventDefault();
+                if (e.type === 'touchstart') {
+                    e.stopPropagation(); // Prevent scroll interference
+                }
                 holdTimer = setTimeout(() => {
                     isDragging = true;
                     app.classList.add('dragging');
@@ -179,8 +187,12 @@
                 app.style.top = (clientY - offsetY) + 'px';
             }
 
-            function cancelHold() {
+            function cancelHold(e) {
                 clearTimeout(holdTimer);
+                if (e.type === 'touchend' && !isDragging) {
+                    // Allow single tap to open link on mobile
+                    window.open(app.href, '_blank');
+                }
             }
 
             function onDrop(e) {
@@ -224,6 +236,92 @@
                 isDragging = false;
             }
         }
+
+        function editLink(appsArray, index) {
+            // Create overlay for blurred background
+            const overlay = document.createElement('div');
+            overlay.className = 'popup-overlay';
+            document.body.appendChild(overlay);
+
+            // Create pop-up container
+            const popup = document.createElement('div');
+            popup.className = 'popup';
+            popup.innerHTML = `
+                <h2>Edit App</h2>
+                <div class="input-group">
+                    <label for="app-name">App Name</label>
+                    <input type="text" id="app-name" value="${appsArray[index].name}" placeholder="Enter app name" />
+                </div>
+                <div class="input-group">
+                    <label for="app-link">App Link</label>
+                    <input type="text" id="app-link" value="${appsArray[index].link}" placeholder="Enter app URL" />
+                </div>
+                <div class="input-group">
+                    <label for="app-icon">App Icon (optional)</label>
+                    <input type="text" id="app-icon" value="${appsArray[index].icon}" placeholder="Enter app Icon" />
+                </div>
+                <div class="button-group">
+                    <button class="exit-btn">Cancel</button>
+                    <button class="add-btn" disabled>Save</button>
+                    <button class="exit-btn">Delete</button>
+                </div>
+            `;
+            document.body.appendChild(popup);
+
+            // Get elements
+            const nameInput = document.getElementById('app-name');
+            const linkInput = document.getElementById('app-link');
+            const iconInput = document.getElementById('app-icon');
+            const saveBtn = popup.querySelector('.add-btn');
+            const deleteBtn = popup.querySelector('.delete-btn');
+            const cancelBtn = popup.querySelector('.exit-btn');
+
+            // Enable/disable Save button based on input
+            function checkInputs() {
+                saveBtn.disabled = !nameInput.value.trim() || !linkInput.value.trim();
+            }
+            nameInput.addEventListener('input', checkInputs);
+            linkInput.addEventListener('input', checkInputs);
+            checkInputs(); // Initial check
+
+            // Close pop-up function
+            function closePopup() {
+                popup.remove();
+                overlay.remove();
+                document.body.style.overflow = ''; // Restore scrolling
+            }
+
+            // Event listeners for closing
+            cancelBtn.addEventListener('click', closePopup);
+            overlay.addEventListener('click', closePopup);
+
+            // Save button functionality
+            saveBtn.addEventListener('click', () => {
+                appsArray[index] = {
+                    name: nameInput.value.trim(),
+                    link: linkInput.value.trim(),
+                    icon: iconInput.value.trim() || 'fa-solid fa-link'
+                };
+                localStorage.setItem('appOrder', JSON.stringify(appsArray));
+                fillPage();
+                closePopup();
+            });
+
+            // Delete button functionality
+            deleteBtn.addEventListener('click', () => {
+                appsArray.splice(index, 1);
+                localStorage.setItem('appOrder', JSON.stringify(appsArray));
+                fillPage();
+                closePopup();
+            });
+
+            // Prevent body scrolling while pop-up is open
+            document.body.style.overflow = 'hidden';
+
+            // Focus on name input
+            nameInput.focus();
+        }
+
         function restore() {
             // Create overlay for blurred background
             const overlay = document.createElement('div');
@@ -287,6 +385,10 @@
                     <label for="app-link">App Link</label>
                     <input type="text" id="app-link" placeholder="Enter app URL" />
                 </div>
+                <div class="input-group">
+                    <label for="app-link">App Icon (optional)</label>
+                    <input type="text" id="app-icon" placeholder="Enter app Icon" />
+                </div>
                 <div class="button-group">
                     <button class="exit-btn">Exit</button>
                     <button class="add-btn" disabled>Add</button>
@@ -297,6 +399,7 @@
             // Get elements
             const nameInput = document.getElementById('app-name');
             const linkInput = document.getElementById('app-link');
+            const iconInput = document.getElementById('app-icon');
             const addBtn = popup.querySelector('.add-btn');
             const exitBtn = popup.querySelector('.exit-btn');
 
@@ -323,7 +426,7 @@
                 const newApp = {
                     name: nameInput.value.trim(),
                     link: linkInput.value.trim(),
-                    icon: 'fa-solid fa-link' // Default icon
+                    icon: iconInput.value || 'fa-solid fa-link'
                 };
                 appsArray.push(newApp);
                 localStorage.setItem('appOrder', JSON.stringify(appsArray));
