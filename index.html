@@ -23,12 +23,6 @@
                 <div class="fa-solid fa-rotate-left opt"></div>
             </div>
         </div>
-        <div id="welcomeMsg" ondblclick="fly()">
-            <div id="emoji">😊</div>
-            <div id="goodTxt">Good Morning</div>
-            <div id="dateTxt">12 Feb, 2024</div>
-            <div id="timeTxt">14:56:32</div>
-        </div>
         <div id="container" class="container">
         </div>
     </main>
@@ -36,56 +30,34 @@
         <p>© 2024 App Canvas. All rights reserved.</p>
     </footer>
     <script>
-        const welcomeMsg = document.getElementById("welcomeMsg");
-        const emoji = document.getElementById("emoji");
-        const goodTxt = document.getElementById("goodTxt");
-        const dateTxt = document.getElementById("dateTxt");
-        const timeTxt = document.getElementById("timeTxt");
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        const weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         let appsArray;
-        makeDraggable(welcomeMsg);
-        let lastTap = 0;
-        welcomeMsg.addEventListener("touchend", function () {
-            const currentTime = new Date().getTime();
-            const tapLength = currentTime - lastTap;
-            if (tapLength < 300 && tapLength > 0) { // Detects double-tap if within 300ms
-                fly();
-            }
-            lastTap = currentTime;
-        });
-        function fly(){
-            welcomeMsg.classList.add("welcomeMsgFly");
-            emoji.textContent = '🤪';
-            setTimeout(() => {
-                welcomeMsg.style.display = "none";
-            }, 1000);
-        }
-        function showMsg(){
-            const systemDate = new Date();
-            dateTxt.textContent = `${weekDays[systemDate.getDay()]}, ${months[systemDate.getMonth()]} ${systemDate.getDate()}, ${systemDate.getFullYear()}`;
-            timeTxt.textContent = `${String(systemDate.getHours()).padStart(2,'0')}:${String(systemDate.getMinutes()).padStart(2, '0')}:${String(systemDate.getSeconds()).padStart(2, '0')}`;
-            if(systemDate.getHours() >= 0 && systemDate.getHours() < 6){
-                goodTxt.textContent = "Time To Sleep";
-                emoji.textContent = "😪";
-            }
-            else if(systemDate.getHours() >= 6 && systemDate.getHours() < 11){
-                goodTxt.textContent = "Good Morning";
-                emoji.textContent = "😋";
-            }
-            else if(systemDate.getHours() >=11 && systemDate.getHours() < 14){
-                goodTxt.textContent = "Good Noon";
-                emoji.textContent = "😎";
-            }
-            else if(systemDate.getHours() >=14 && systemDate.getHours() < 20){
-                goodTxt.textContent = "Good Evening";
-                emoji.textContent = "😏";
-            }
-            else if(systemDate.getHours() >=20 && systemDate.getHours() < 24){
-                goodTxt.textContent = "Good Night";
-                emoji.textContent = "😴";
-            }
-        }
+
+        const DEFAULT_APPS = [
+            { name: "Connection", link: "http://giris.wipoint.com.tr/logout?", icon: "fa-solid fa-wifi" },
+            { name: "Whatsapp", link: "https://web.whatsapp.com/", icon: "fa-brands fa-whatsapp" },
+            { name: "Sabis", link: "https://obs.sabis.sakarya.edu.tr/Ders", icon: "fa-solid fa-graduation-cap" },
+            { name: "Drive", link: "https://drive.google.com/", icon: "fa-brands fa-google-drive" },
+            { name: "Photos", link: "https://photos.google.com/", icon: "si:googlephotos" },
+            { name: "Telegram", link: "https://web.telegram.org/k/", icon: "fa-brands fa-telegram" },
+            { name: "YouTube", link: "https://youtube.com/", icon: "fa-brands fa-youtube" },
+            { name: "Music", link: "https://music.youtube.com/playlist?list=LM", icon: "si:youtubemusic" },
+            { name: "Encoder", link: "https://mamomgd1.github.io/encoder/", icon: "fa-solid fa-lock" },
+            { name: "ChatGPT", link: "https://chatgpt.com/", icon: "fa-solid fa-microchip" },
+            { name: "Gmail", link: "https://mail.google.com/mail/u/0/#inbox", icon: "si:gmail" },
+            { name: "Translate", link: "https://translate.google.com/?sl=en&tl=tr&op=translate", icon: "si:googletranslate" },
+            { name: "LinkedIn", link: "https://www.linkedin.com/feed/", icon: "fa-brands fa-linkedin" },
+            { name: "Pinterest", link: "https://tr.pinterest.com/", icon: "fa-brands fa-pinterest" },
+            { name: "Facebook", link: "https://www.facebook.com/", icon: "fa-brands fa-facebook" },
+            { name: "X", link: "https://x.com/home", icon: "fa-brands fa-x-twitter" },
+            { name: "Instagram", link: "https://instagram.com/", icon: "fa-brands fa-instagram" },
+            { name: "Github", link: "https://github.com/", icon: "fa-brands fa-github" },
+            { name: "Duolingo", link: "https://www.duolingo.com/learn", icon: "si:duolingo" },
+            { name: "Grok", link: "https://grok.com/" },
+            { name: "DeepSeek", link: "https://chat.deepseek.com/" },
+            { name: "Gemini", link: "https://gemini.google.com/app" },
+            { name: "Mendeley", link: "https://www.mendeley.com/reference-manager/library/all-references" },
+            { name: "Notion", link: "https://app.notion.com/" }
+        ];
 
         /* ---------- new logo (icon) assigning method ---------- */
         // Each app's icon is now found automatically instead of typing a FontAwesome
@@ -493,32 +465,12 @@
         function fillPage() {
             // Check localStorage first
             let appsData = localStorage.getItem('appOrder');
-            appsArray = appsData ? JSON.parse(appsData) : [
-                { name: "Connection", link: "http://giris.wipoint.com.tr/logout?" },
-                { name: "Whatsapp", link: "https://web.whatsapp.com/" },
-                { name: "Sabis", link: "https://obs.sabis.sakarya.edu.tr/Ders" },
-                { name: "Telegram", link: "https://web.telegram.org/k/" },
-                { name: "Encoder", link: "https://mamomgd1.github.io/encoder/" },
-                { name: "Drive", link: "https://drive.google.com/" },
-                { name: "Gmail", link: "https://mail.google.com/mail/u/0/#inbox" },
-                { name: "Music", link: "https://music.youtube.com/playlist?list=LM" },
-                { name: "YouTube", link: "https://youtube.com/" },
-                { name: "Translate", link: "https://translate.google.com/?sl=en&tl=tr&op=translate" },
-                { name: "LinkedIn", link: "https://www.linkedin.com/feed/" },
-                { name: "ChatGPT", link: "https://chatgpt.com/" },
-                { name: "Photos", link: "https://photos.google.com/" },
-                { name: "Pinterest", link: "https://tr.pinterest.com/" },
-                { name: "Facebook", link: "https://www.facebook.com/" },
-                { name: "X", link: "https://x.com/home" },
-                { name: "Instagram", link: "https://instagram.com/" },
-                { name: "Github", link: "https://github.com/" },
-                { name: "Duolingo", link: "https://www.duolingo.com/learn" },
-                { name: "Grok", link: "https://grok.com/" },
-                { name: "DeepSeek", link: "https://chat.deepseek.com/" }
-            ];
+            appsArray = appsData ? JSON.parse(appsData) : JSON.parse(JSON.stringify(DEFAULT_APPS));
 
             const container = document.getElementById('container');
             container.innerHTML = ''; // Clear any existing apps
+            typeBuffer = '';
+            selectedAppIndex = -1;
 
             appsArray.forEach((appData, index) => {
                 const app = document.createElement('a');
@@ -961,73 +913,69 @@
             // Focus on link input
             linkInput.focus();
         }
+        /* ---------- type-ahead keyboard navigation ---------- */
+        // Typing letters "hovers" the first app whose name starts with what you've
+        // typed so far; a ~1s pause between keystrokes starts a fresh search instead
+        // of extending the old one. Enter opens the currently highlighted app.
+        let typeBuffer = '';
+        let lastKeyTime = 0;
+        let selectedAppIndex = -1;
+
+        function clearKbdSelection() {
+            const prev = document.querySelector('.app-item.kbd-active');
+            if (prev) prev.classList.remove('kbd-active');
+        }
+        function selectAppByIndex(idx) {
+            clearKbdSelection();
+            selectedAppIndex = idx;
+            if (idx === -1) return;
+            const el = document.querySelector('.app-item[data-index="' + idx + '"]');
+            if (el) {
+                el.classList.add('kbd-active');
+                el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            }
+        }
+        function initTypeAhead() {
+            document.addEventListener('keydown', (e) => {
+                // Don't hijack typing in a form field, or while a popup is open
+                const tag = document.activeElement.tagName;
+                if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+                if (document.querySelector('.popup-overlay')) return;
+
+                if (e.key === 'Enter') {
+                    if (selectedAppIndex !== -1 && appsArray[selectedAppIndex]) {
+                        window.open(appsArray[selectedAppIndex].link, '_blank');
+                    }
+                    return;
+                }
+                if (e.key === 'Escape') {
+                    typeBuffer = '';
+                    selectAppByIndex(-1);
+                    return;
+                }
+                // Only plain single characters (letters/digits/symbols), no modifier combos
+                if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
+
+                const now = Date.now();
+                if (now - lastKeyTime > 1000) typeBuffer = '';
+                lastKeyTime = now;
+                typeBuffer += e.key.toLowerCase();
+
+                let idx = appsArray.findIndex(a => a.name.toLowerCase().startsWith(typeBuffer));
+                if (idx === -1) {
+                    // No app matches the extended buffer — start over with just this key
+                    typeBuffer = e.key.toLowerCase();
+                    idx = appsArray.findIndex(a => a.name.toLowerCase().startsWith(typeBuffer));
+                }
+                selectAppByIndex(idx);
+            });
+        }
+
         // Call fillPage after DOM is loaded
         document.addEventListener("DOMContentLoaded", function() {
-            showMsg();
-            setInterval(showMsg, 1000);
             fillPage();
+            initTypeAhead();
         });
-
-        function makeDraggable(element) {
-            let offsetX = 0, offsetY = 0;
-
-            // Function to handle the start of drag on both mouse and touch
-            function dragStart(event) {
-                event.preventDefault();
-
-                // Check if it's a touch event
-                const isTouchEvent = event.type === 'touchstart';
-
-                // Calculate the initial offset
-                if (isTouchEvent) {
-                    offsetX = event.touches[0].clientX - element.getBoundingClientRect().left;
-                    offsetY = event.touches[0].clientY - element.getBoundingClientRect().top;
-                } else {
-                    offsetX = event.clientX - element.getBoundingClientRect().left;
-                    offsetY = event.clientY - element.getBoundingClientRect().top;
-                }
-
-                // Attach appropriate event listeners based on device type
-                if (isTouchEvent) {
-                    document.addEventListener('touchmove', drag);
-                    document.addEventListener('touchend', dragEnd);
-                } else {
-                    document.addEventListener('mousemove', drag);
-                    document.addEventListener('mouseup', dragEnd);
-                }
-            }
-
-            // Function to handle the drag movement on both mouse and touch
-            function drag(event) {
-                event.preventDefault();
-
-                const isTouchEvent = event.type === 'touchmove';
-                const x = isTouchEvent ? event.touches[0].clientX - offsetX : event.clientX - offsetX;
-                const y = isTouchEvent ? event.touches[0].clientY - offsetY : event.clientY - offsetY;
-
-                // Apply the fixed position with new coordinates
-                element.style.position = 'fixed';
-                element.style.left = `${x}px`;
-                element.style.top = `${y}px`;
-            }
-
-            // Function to handle the end of drag on both mouse and touch
-            function dragEnd(event) {
-                const isTouchEvent = event.type === 'touchend';
-
-                if (isTouchEvent) {
-                    document.removeEventListener('touchmove', drag);
-                    document.removeEventListener('touchend', dragEnd);
-                } else {
-                    document.removeEventListener('mousemove', drag);
-                    document.removeEventListener('mouseup', dragEnd);
-                }
-            }
-
-            // Add event listeners for both mouse and touch start events
-            element.addEventListener('mousedown', dragStart);
-            element.addEventListener('touchstart', dragStart);
-        }
     </script>
 </body>
 </html>

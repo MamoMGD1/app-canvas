@@ -48,70 +48,6 @@ main{
 .cont:hover .exp{
     transform: translateX(-10px) scale(1);
 }
-#welcomeMsg {
-    position: fixed;
-    height: fit-content;
-    bottom: 20px;             /* Adjust distance from bottom */
-    left: 20px;              /* Adjust distance from right */
-    padding: 5px 15px;
-    border-radius: 10px;      /* Smooth rounded corners */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Soft shadow */
-    color: #fff;           /* Match color scheme */
-    background-color: #5b1af311;
-    font-size: 14px;
-    font-family: monospace;
-    text-align: center;
-    opacity: 0.7;
-    transition: opacity 0.3s ease-in-out;
-    cursor: grab;
-    backdrop-filter: blur(5px);
-}
-#welcomeMsg:active{
-    cursor: grabbing;
-}
-#emoji {
-    font-size: 30px;                  /* Increase size to make it noticeable but not overwhelming */
-    animation: bounce 2s infinite;    /* Bouncing animation */
-    color: #ffd700;                   /* Warm golden color */
-    display: inline-block;
-    text-align: center;
-    margin-bottom: 5px;
-    transition: transform 0.2s;
-}
-
-/* Bouncing animation */
-@keyframes bounce {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-8px);
-    }
-}
-
-#welcomeMsg:hover {
-    opacity: 1; /* Brighter when hovered */
-}
-.welcomeMsgFly{
-    animation: fly 1s ease-in-out 1;
-}
-@keyframes fly{
-    to{
-        transform: translateY(-250px);
-        opacity: 0;
-    }
-}
-#welcomeMsg #goodTxt {
-    font-weight: bold;
-    font-size: 16px;
-    margin-bottom: 5px;
-}
-
-#welcomeMsg #dateTxt,
-#welcomeMsg #timeTxt {
-    margin: 5px 0px;
-    font-size: 12px;
-}
 #box1{
     position: fixed;
     background-color: #fff;
@@ -221,6 +157,22 @@ footer{
     transform: translateY(-15px);
     font-size: 20px;
 }
+
+/* Keyboard type-ahead selection mirrors the mouse-hover look */
+.app-item.kbd-active .app-icon{
+    font-size: 90px;
+    border-radius: 15%;
+}
+.app-item.kbd-active .app-icon img{
+    width: 90px;
+    height: 90px;
+}
+.app-item.kbd-active .app-name{
+    color: #ffffff;
+    transform: translateY(-15px);
+    font-size: 20px;
+}
+
 .dragging {
     opacity: 0.7;
     cursor: grabbing;
