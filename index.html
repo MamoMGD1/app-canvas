@@ -8,11 +8,11 @@
     <link rel="stylesheet" href="styles.css">
     <script src="https://kit.fontawesome.com/80b5e04a21.js" crossorigin="anonymous"></script>
 </head>
-    
+
 <body>
     <div id="box1"></div>
     <main>
-        <h1 id="Title_Button">App Canvas</h1> 
+        <h1 id="Title_Button">App Canvas</h1>
         <div id="settings">
             <div class="cont" onclick="addLink(appsArray)" style="margin-right: 1px;">
                 <div class="exp">Add Link</div>
@@ -86,32 +86,435 @@
                 emoji.textContent = "😴";
             }
         }
-        
+
+        /* ---------- new logo (icon) assigning method ---------- */
+        // Each app's icon is now found automatically instead of typing a FontAwesome
+        // class by hand: we search Simple Icons (a free, open brand-icon library) using
+        // the app's name and domain, rendered as a flat white glyph exactly like the
+        // original FontAwesome icons were. A small table covers well-known brands that
+        // Simple Icons doesn't carry (removed at the trademark holder's request) but
+        // FontAwesome's free set does. If nothing is found, a keyword falls back to a
+        // generic category icon. You can still override any of it manually — either by
+        // clicking a glyph from the picker in the Add/Edit popup, or by typing an exact
+        // FontAwesome class, same as before, just no longer required.
+        function normalizeUrl(url) {
+            url = (url || '').trim();
+            if (!url) return url;
+            if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(url)) url = 'https://' + url;
+            return url;
+        }
+        function getDomain(url) {
+            try { return new URL(normalizeUrl(url)).hostname.replace(/^www\./, ''); }
+            catch (e) { return ''; }
+        }
+        function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+        function slugify(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
+        function escapeAttr(s) {
+            return String(s == null ? '' : s)
+                .replace(/&/g, '&amp;').replace(/"/g, '&quot;')
+                .replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        const MULTI_PART_TLDS = new Set(['co.uk', 'com.tr', 'edu.tr', 'gov.tr', 'org.tr', 'co.jp', 'com.br', 'co.in', 'com.au', 'co.nz', 'com.cn', 'co.kr']);
+        // Splits a hostname into { sub, brand }: e.g. "music.youtube.com" -> { sub: "music", brand: "youtube" }
+        function domainParts(domain) {
+            if (!domain) return { sub: '', brand: '' };
+            const parts = domain.split('.');
+            if (parts.length <= 1) return { sub: '', brand: parts[0] || '' };
+            let tldLen = 1;
+            if (parts.length >= 3 && MULTI_PART_TLDS.has(parts.slice(-2).join('.'))) tldLen = 2;
+            const brandIdx = Math.max(parts.length - tldLen - 1, 0);
+            const brand = parts[brandIdx] || '';
+            const sub = brandIdx > 0 ? parts[0] : '';
+            return { sub, brand };
+        }
+        function suggestName(domain) { return capitalize(domainParts(domain).brand); }
+
+        function simpleIconUrl(slug) { return 'https://cdn.simpleicons.org/' + encodeURIComponent(slug) + '/ffffff'; }
+
+        // Well-known brands missing from Simple Icons (removed at the trademark
+        // holder's request) that FontAwesome's free set still carries.
+        const FA_BRAND_FALLBACK = {
+            linkedin: 'fa-brands fa-linkedin',
+            microsoft: 'fa-brands fa-microsoft',
+            amazon: 'fa-brands fa-amazon',
+            aws: 'fa-brands fa-aws',
+            skype: 'fa-brands fa-skype',
+            slack: 'fa-brands fa-slack',
+            yahoo: 'fa-brands fa-yahoo'
+        };
+
+        // Generic category icon used when no brand mark can be found at all.
+        const CATEGORY_ICONS = [
+            { keywords: ['mail', 'gmail', 'inbox', 'outlook'], icon: 'fa-solid fa-envelope' },
+            { keywords: ['drive', 'dropbox', 'storage', 'onedrive', 'cloud'], icon: 'fa-solid fa-cloud' },
+            { keywords: ['music', 'spotify', 'soundcloud'], icon: 'fa-solid fa-music' },
+            { keywords: ['video', 'stream', 'netflix', 'watch'], icon: 'fa-solid fa-video' },
+            { keywords: ['photo', 'image', 'gallery', 'flickr'], icon: 'fa-solid fa-image' },
+            { keywords: ['translate', 'language', 'lingo'], icon: 'fa-solid fa-language' },
+            { keywords: ['duolingo', 'sabis', 'obs', 'ders', 'university', 'school', 'academy', 'course', '.edu'], icon: 'fa-solid fa-graduation-cap' },
+            { keywords: ['wifi', 'network', 'giris', 'logout', 'login', 'router', 'connection'], icon: 'fa-solid fa-wifi' },
+            { keywords: ['encoder', 'github', 'gitlab', 'terminal', 'code', 'developer'], icon: 'fa-solid fa-code' },
+            { keywords: ['chatgpt', 'openai', 'grok', 'deepseek', 'claude', 'gemini', 'chatbot', 'assistant'], icon: 'fa-solid fa-robot' },
+            { keywords: ['calendar', 'schedule'], icon: 'fa-solid fa-calendar-days' },
+            { keywords: ['note', 'notion', 'document'], icon: 'fa-solid fa-file-lines' },
+            { keywords: ['shop', 'store', 'cart'], icon: 'fa-solid fa-cart-shopping' },
+            { keywords: ['game', 'steam'], icon: 'fa-solid fa-gamepad' },
+            { keywords: ['bank', 'wallet', 'finance'], icon: 'fa-solid fa-wallet' }
+        ];
+        function matchCategoryIcon(name, domain) {
+            const haystack = (String(name).toLowerCase() + ' ' + String(domain).toLowerCase());
+            for (let i = 0; i < CATEGORY_ICONS.length; i++) {
+                if (CATEGORY_ICONS[i].keywords.some(k => haystack.includes(k))) return CATEGORY_ICONS[i].icon;
+            }
+            return null;
+        }
+
+        // Popular defaults shown before the user searches for anything.
+        const ICON_PICKS = [
+            'fa-solid fa-link', 'fa-solid fa-globe', 'fa-solid fa-envelope', 'fa-solid fa-cloud',
+            'fa-solid fa-video', 'fa-solid fa-music', 'fa-solid fa-image', 'fa-solid fa-language',
+            'fa-solid fa-graduation-cap', 'fa-solid fa-wifi', 'fa-solid fa-code', 'fa-solid fa-robot',
+            'fa-solid fa-calendar-days', 'fa-solid fa-file-lines', 'fa-solid fa-magnifying-glass',
+            'fa-solid fa-cart-shopping', 'fa-solid fa-gamepad', 'fa-solid fa-wallet',
+            'fa-brands fa-github', 'fa-brands fa-google', 'fa-brands fa-whatsapp', 'fa-brands fa-telegram',
+            'fa-brands fa-youtube', 'fa-brands fa-x-twitter', 'fa-brands fa-instagram', 'fa-brands fa-facebook',
+            'fa-brands fa-linkedin', 'fa-brands fa-discord', 'fa-brands fa-spotify', 'fa-brands fa-apple'
+        ];
+
+        // A local, curated FontAwesome index (name + synonyms) searched instantly as you
+        // type — this is "platform 1". Kept local because FontAwesome's free tier has no
+        // public searchable API; this covers the icons someone would realistically want.
+        const LOCAL_ICONS = [
+            { cls: 'fa-solid fa-envelope', label: 'Envelope', keywords: ['mail', 'email', 'message', 'letter', 'inbox'] },
+            { cls: 'fa-solid fa-comment', label: 'Comment', keywords: ['chat', 'message', 'talk', 'bubble'] },
+            { cls: 'fa-solid fa-comments', label: 'Comments', keywords: ['chat', 'discussion', 'talk'] },
+            { cls: 'fa-solid fa-phone', label: 'Phone', keywords: ['call', 'telephone', 'contact'] },
+            { cls: 'fa-solid fa-video', label: 'Video', keywords: ['call', 'camera', 'movie', 'stream'] },
+            { cls: 'fa-solid fa-microphone', label: 'Microphone', keywords: ['audio', 'voice', 'podcast', 'record'] },
+            { cls: 'fa-solid fa-paper-plane', label: 'Paper Plane', keywords: ['send', 'submit', 'message'] },
+            { cls: 'fa-solid fa-bell', label: 'Bell', keywords: ['notification', 'alert', 'reminder'] },
+            { cls: 'fa-solid fa-share-nodes', label: 'Share', keywords: ['share', 'network', 'connect'] },
+            { cls: 'fa-solid fa-calendar-days', label: 'Calendar', keywords: ['schedule', 'event', 'date', 'planner'] },
+            { cls: 'fa-solid fa-clock', label: 'Clock', keywords: ['time', 'alarm', 'schedule'] },
+            { cls: 'fa-solid fa-file-lines', label: 'Document', keywords: ['note', 'text', 'doc', 'file'] },
+            { cls: 'fa-solid fa-folder', label: 'Folder', keywords: ['files', 'storage', 'directory'] },
+            { cls: 'fa-solid fa-clipboard', label: 'Clipboard', keywords: ['list', 'notes', 'tasks'] },
+            { cls: 'fa-solid fa-book', label: 'Book', keywords: ['read', 'library', 'learn'] },
+            { cls: 'fa-solid fa-note-sticky', label: 'Sticky Note', keywords: ['notes', 'memo', 'reminder'] },
+            { cls: 'fa-solid fa-list-check', label: 'Checklist', keywords: ['todo', 'tasks', 'list'] },
+            { cls: 'fa-solid fa-chart-line', label: 'Chart', keywords: ['analytics', 'stats', 'graph', 'data'] },
+            { cls: 'fa-solid fa-chart-pie', label: 'Pie Chart', keywords: ['analytics', 'stats', 'data'] },
+            { cls: 'fa-solid fa-image', label: 'Image', keywords: ['photo', 'picture', 'gallery'] },
+            { cls: 'fa-solid fa-images', label: 'Images', keywords: ['photos', 'gallery', 'album'] },
+            { cls: 'fa-solid fa-camera', label: 'Camera', keywords: ['photo', 'capture', 'picture'] },
+            { cls: 'fa-solid fa-music', label: 'Music', keywords: ['song', 'audio', 'sound'] },
+            { cls: 'fa-solid fa-headphones', label: 'Headphones', keywords: ['audio', 'podcast', 'music'] },
+            { cls: 'fa-solid fa-film', label: 'Film', keywords: ['movie', 'cinema', 'video'] },
+            { cls: 'fa-solid fa-play', label: 'Play', keywords: ['video', 'media', 'stream'] },
+            { cls: 'fa-solid fa-globe', label: 'Globe', keywords: ['world', 'website', 'internet', 'web'] },
+            { cls: 'fa-solid fa-link', label: 'Link', keywords: ['url', 'hyperlink', 'website'] },
+            { cls: 'fa-solid fa-house', label: 'House', keywords: ['home'] },
+            { cls: 'fa-solid fa-compass', label: 'Compass', keywords: ['explore', 'navigate', 'discover'] },
+            { cls: 'fa-solid fa-map', label: 'Map', keywords: ['location', 'directions', 'travel'] },
+            { cls: 'fa-solid fa-location-dot', label: 'Location Pin', keywords: ['map', 'pin', 'place'] },
+            { cls: 'fa-solid fa-magnifying-glass', label: 'Search', keywords: ['find', 'search', 'look'] },
+            { cls: 'fa-solid fa-filter', label: 'Filter', keywords: ['sort', 'refine'] },
+            { cls: 'fa-solid fa-code', label: 'Code', keywords: ['programming', 'developer', 'dev'] },
+            { cls: 'fa-solid fa-terminal', label: 'Terminal', keywords: ['console', 'cli', 'shell', 'encoder'] },
+            { cls: 'fa-solid fa-bug', label: 'Bug', keywords: ['debug', 'issue', 'error'] },
+            { cls: 'fa-solid fa-database', label: 'Database', keywords: ['data', 'storage', 'sql'] },
+            { cls: 'fa-solid fa-server', label: 'Server', keywords: ['hosting', 'cloud', 'backend'] },
+            { cls: 'fa-solid fa-laptop-code', label: 'Laptop Code', keywords: ['programming', 'developer'] },
+            { cls: 'fa-solid fa-gears', label: 'Gears', keywords: ['settings', 'config', 'preferences'] },
+            { cls: 'fa-solid fa-microchip', label: 'Microchip', keywords: ['cpu', 'hardware', 'tech'] },
+            { cls: 'fa-solid fa-robot', label: 'Robot', keywords: ['ai', 'bot', 'automation', 'chatbot', 'assistant'] },
+            { cls: 'fa-solid fa-brain', label: 'Brain', keywords: ['ai', 'mind', 'intelligence'] },
+            { cls: 'fa-solid fa-cart-shopping', label: 'Cart', keywords: ['shop', 'store', 'buy'] },
+            { cls: 'fa-solid fa-bag-shopping', label: 'Shopping Bag', keywords: ['shop', 'store'] },
+            { cls: 'fa-solid fa-credit-card', label: 'Credit Card', keywords: ['payment', 'card', 'pay'] },
+            { cls: 'fa-solid fa-wallet', label: 'Wallet', keywords: ['money', 'finance', 'pay'] },
+            { cls: 'fa-solid fa-sack-dollar', label: 'Money', keywords: ['finance', 'bank', 'cash'] },
+            { cls: 'fa-solid fa-coins', label: 'Coins', keywords: ['money', 'currency'] },
+            { cls: 'fa-solid fa-receipt', label: 'Receipt', keywords: ['invoice', 'bill', 'order'] },
+            { cls: 'fa-solid fa-graduation-cap', label: 'Graduation Cap', keywords: ['school', 'university', 'education', 'learn'] },
+            { cls: 'fa-solid fa-chalkboard', label: 'Chalkboard', keywords: ['teach', 'class', 'school'] },
+            { cls: 'fa-solid fa-language', label: 'Language', keywords: ['translate', 'locale'] },
+            { cls: 'fa-solid fa-user', label: 'User', keywords: ['profile', 'account', 'person'] },
+            { cls: 'fa-solid fa-users', label: 'Users', keywords: ['people', 'team', 'group'] },
+            { cls: 'fa-solid fa-heart', label: 'Heart', keywords: ['like', 'love', 'favorite'] },
+            { cls: 'fa-solid fa-star', label: 'Star', keywords: ['favorite', 'rating', 'bookmark'] },
+            { cls: 'fa-solid fa-thumbs-up', label: 'Thumbs Up', keywords: ['like', 'approve'] },
+            { cls: 'fa-solid fa-gear', label: 'Gear', keywords: ['settings', 'config', 'preferences'] },
+            { cls: 'fa-solid fa-wrench', label: 'Wrench', keywords: ['tools', 'fix', 'repair'] },
+            { cls: 'fa-solid fa-lock', label: 'Lock', keywords: ['security', 'private', 'password'] },
+            { cls: 'fa-solid fa-key', label: 'Key', keywords: ['access', 'password', 'unlock'] },
+            { cls: 'fa-solid fa-shield', label: 'Shield', keywords: ['security', 'protect', 'safety'] },
+            { cls: 'fa-solid fa-circle-question', label: 'Help', keywords: ['faq', 'support', 'question'] },
+            { cls: 'fa-solid fa-triangle-exclamation', label: 'Warning', keywords: ['alert', 'caution'] },
+            { cls: 'fa-solid fa-car', label: 'Car', keywords: ['vehicle', 'drive', 'transport'] },
+            { cls: 'fa-solid fa-plane', label: 'Plane', keywords: ['flight', 'travel'] },
+            { cls: 'fa-solid fa-train', label: 'Train', keywords: ['rail', 'transport'] },
+            { cls: 'fa-solid fa-ship', label: 'Ship', keywords: ['boat', 'sea', 'travel'] },
+            { cls: 'fa-solid fa-sun', label: 'Sun', keywords: ['weather', 'day', 'bright'] },
+            { cls: 'fa-solid fa-cloud', label: 'Cloud', keywords: ['weather', 'storage', 'drive'] },
+            { cls: 'fa-solid fa-moon', label: 'Moon', keywords: ['night', 'dark'] },
+            { cls: 'fa-solid fa-gamepad', label: 'Gamepad', keywords: ['game', 'play', 'gaming'] },
+            { cls: 'fa-solid fa-dice', label: 'Dice', keywords: ['random', 'game'] },
+            { cls: 'fa-solid fa-trophy', label: 'Trophy', keywords: ['award', 'win', 'achievement'] },
+            { cls: 'fa-solid fa-heart-pulse', label: 'Health', keywords: ['medical', 'fitness', 'pulse'] },
+            { cls: 'fa-solid fa-dumbbell', label: 'Dumbbell', keywords: ['gym', 'fitness', 'workout'] },
+            { cls: 'fa-solid fa-download', label: 'Download', keywords: ['save', 'export'] },
+            { cls: 'fa-solid fa-upload', label: 'Upload', keywords: ['import', 'export'] },
+            { cls: 'fa-solid fa-rocket', label: 'Rocket', keywords: ['launch', 'fast', 'startup'] },
+            { cls: 'fa-solid fa-lightbulb', label: 'Lightbulb', keywords: ['idea', 'tip'] },
+            { cls: 'fa-solid fa-palette', label: 'Palette', keywords: ['design', 'art', 'color'] },
+            { cls: 'fa-solid fa-paintbrush', label: 'Paintbrush', keywords: ['design', 'art'] },
+            { cls: 'fa-solid fa-wifi', label: 'Wifi', keywords: ['network', 'connection', 'router'] },
+            { cls: 'fa-brands fa-github', label: 'GitHub', keywords: ['git', 'code', 'dev'] },
+            { cls: 'fa-brands fa-gitlab', label: 'GitLab', keywords: ['git', 'code', 'dev'] },
+            { cls: 'fa-brands fa-bitbucket', label: 'Bitbucket', keywords: ['git', 'code'] },
+            { cls: 'fa-brands fa-google', label: 'Google', keywords: ['search'] },
+            { cls: 'fa-brands fa-whatsapp', label: 'WhatsApp', keywords: ['chat', 'message'] },
+            { cls: 'fa-brands fa-telegram', label: 'Telegram', keywords: ['chat', 'message'] },
+            { cls: 'fa-brands fa-youtube', label: 'YouTube', keywords: ['video', 'watch'] },
+            { cls: 'fa-brands fa-x-twitter', label: 'X (Twitter)', keywords: ['twitter', 'social'] },
+            { cls: 'fa-brands fa-twitter', label: 'Twitter (legacy)', keywords: ['x', 'social'] },
+            { cls: 'fa-brands fa-instagram', label: 'Instagram', keywords: ['photo', 'social'] },
+            { cls: 'fa-brands fa-facebook', label: 'Facebook', keywords: ['social'] },
+            { cls: 'fa-brands fa-linkedin', label: 'LinkedIn', keywords: ['job', 'career', 'social'] },
+            { cls: 'fa-brands fa-discord', label: 'Discord', keywords: ['chat', 'gaming'] },
+            { cls: 'fa-brands fa-spotify', label: 'Spotify', keywords: ['music', 'audio'] },
+            { cls: 'fa-brands fa-apple', label: 'Apple', keywords: [] },
+            { cls: 'fa-brands fa-microsoft', label: 'Microsoft', keywords: [] },
+            { cls: 'fa-brands fa-amazon', label: 'Amazon', keywords: ['shop', 'store'] },
+            { cls: 'fa-brands fa-aws', label: 'AWS', keywords: ['cloud', 'amazon'] },
+            { cls: 'fa-brands fa-slack', label: 'Slack', keywords: ['chat', 'work'] },
+            { cls: 'fa-brands fa-skype', label: 'Skype', keywords: ['call', 'chat'] },
+            { cls: 'fa-brands fa-yahoo', label: 'Yahoo', keywords: ['mail', 'search'] },
+            { cls: 'fa-brands fa-reddit', label: 'Reddit', keywords: ['forum', 'social'] },
+            { cls: 'fa-brands fa-tiktok', label: 'TikTok', keywords: ['video', 'social'] },
+            { cls: 'fa-brands fa-pinterest', label: 'Pinterest', keywords: ['image', 'social'] },
+            { cls: 'fa-brands fa-twitch', label: 'Twitch', keywords: ['stream', 'gaming'] },
+            { cls: 'fa-brands fa-paypal', label: 'PayPal', keywords: ['pay', 'money'] },
+            { cls: 'fa-brands fa-dropbox', label: 'Dropbox', keywords: ['storage', 'cloud', 'drive'] },
+            { cls: 'fa-brands fa-wordpress', label: 'WordPress', keywords: ['blog', 'website'] },
+            { cls: 'fa-brands fa-steam', label: 'Steam', keywords: ['game', 'gaming'] },
+            { cls: 'fa-brands fa-snapchat', label: 'Snapchat', keywords: ['social', 'photo'] },
+            { cls: 'fa-brands fa-vimeo', label: 'Vimeo', keywords: ['video'] },
+            { cls: 'fa-brands fa-soundcloud', label: 'SoundCloud', keywords: ['music', 'audio'] },
+            { cls: 'fa-brands fa-medium', label: 'Medium', keywords: ['blog', 'article', 'write'] },
+            { cls: 'fa-brands fa-tumblr', label: 'Tumblr', keywords: ['blog', 'social'] },
+            { cls: 'fa-brands fa-stack-overflow', label: 'Stack Overflow', keywords: ['code', 'dev', 'question'] },
+            { cls: 'fa-brands fa-docker', label: 'Docker', keywords: ['dev', 'container'] },
+            { cls: 'fa-brands fa-npm', label: 'npm', keywords: ['dev', 'node'] },
+            { cls: 'fa-brands fa-node-js', label: 'Node.js', keywords: ['dev', 'javascript'] },
+            { cls: 'fa-brands fa-js', label: 'JavaScript', keywords: ['dev', 'code'] },
+            { cls: 'fa-brands fa-css3-alt', label: 'CSS3', keywords: ['dev', 'web'] },
+            { cls: 'fa-brands fa-html5', label: 'HTML5', keywords: ['dev', 'web'] },
+            { cls: 'fa-brands fa-php', label: 'PHP', keywords: ['dev', 'code'] },
+            { cls: 'fa-brands fa-react', label: 'React', keywords: ['dev', 'javascript'] },
+            { cls: 'fa-brands fa-android', label: 'Android', keywords: ['mobile', 'google'] },
+            { cls: 'fa-brands fa-windows', label: 'Windows', keywords: ['microsoft', 'os'] },
+            { cls: 'fa-brands fa-linux', label: 'Linux', keywords: ['os', 'dev'] },
+            { cls: 'fa-brands fa-ubuntu', label: 'Ubuntu', keywords: ['linux', 'os'] },
+            { cls: 'fa-brands fa-chrome', label: 'Chrome', keywords: ['browser', 'google'] },
+            { cls: 'fa-brands fa-firefox', label: 'Firefox', keywords: ['browser', 'mozilla'] }
+        ];
+
+        // Simple Icons' full brand list (~3000 titles) is fetched once, lazily, and
+        // searched locally — this is "platform 2", giving far broader brand coverage
+        // than FontAwesome's free set (which only ships a few hundred brand marks).
+        let simpleIconsIndex = null;
+        let simpleIconsPromise = null;
+        function loadSimpleIconsIndex() {
+            if (simpleIconsIndex) return Promise.resolve(simpleIconsIndex);
+            if (simpleIconsPromise) return simpleIconsPromise;
+            simpleIconsPromise = fetch('https://cdn.jsdelivr.net/npm/simple-icons@latest/_data/simple-icons.json')
+                .then(res => res.json())
+                .then(data => {
+                    simpleIconsIndex = data.map(d => ({ title: d.title, slug: slugify(d.title) }));
+                    return simpleIconsIndex;
+                })
+                .catch(() => { simpleIconsIndex = []; return simpleIconsIndex; });
+            return simpleIconsPromise;
+        }
+
+        // Human-readable label for a stored icon value, used next to the picker.
+        function labelForIcon(value) {
+            if (!value) return '';
+            if (value.indexOf('si:') === 0) {
+                const slug = value.slice(3);
+                const found = simpleIconsIndex && simpleIconsIndex.find(e => e.slug === slug);
+                return found ? found.title : slug;
+            }
+            const found = LOCAL_ICONS.find(e => e.cls === value);
+            return found ? found.label : value;
+        }
+
+        function makeIconPickButton(previewNode, title, onClick) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'icon-pick';
+            btn.title = title;
+            btn.appendChild(previewNode);
+            btn.addEventListener('click', onClick);
+            return btn;
+        }
+
+        // Renders the live search-result grid inside the Add/Edit popup, searching
+        // both the local FontAwesome index and (once loaded) the Simple Icons index.
+        function renderIconPicker(gridEl, query, onPick) {
+            gridEl.innerHTML = '';
+            const q = query.trim().toLowerCase();
+
+            if (!q) {
+                ICON_PICKS.forEach(cls => {
+                    const i = document.createElement('i');
+                    i.className = cls;
+                    gridEl.appendChild(makeIconPickButton(i, cls, () => onPick(cls)));
+                });
+                return;
+            }
+
+            const faMatches = LOCAL_ICONS.filter(entry =>
+                entry.label.toLowerCase().includes(q) || entry.keywords.some(k => k.includes(q))
+            ).slice(0, 24);
+            faMatches.forEach(entry => {
+                const i = document.createElement('i');
+                i.className = entry.cls;
+                gridEl.appendChild(makeIconPickButton(i, entry.label, () => onPick(entry.cls)));
+            });
+
+            const siPool = simpleIconsIndex || [];
+            const siMatches = siPool.filter(entry => entry.title.toLowerCase().includes(q)).slice(0, 24);
+            siMatches.forEach(entry => {
+                const img = document.createElement('img');
+                img.alt = '';
+                img.src = simpleIconUrl(entry.slug);
+                const value = 'si:' + entry.slug;
+                const btn = makeIconPickButton(img, entry.title, () => onPick(value));
+                img.onerror = () => btn.remove(); // a handful of titles slugify differently than the CDN expects
+                gridEl.appendChild(btn);
+            });
+
+            if (!faMatches.length && !siMatches.length) {
+                const empty = document.createElement('div');
+                empty.className = 'icon-picker-empty';
+                empty.textContent = simpleIconsIndex
+                    ? 'No matching icon — you can still type an exact class, e.g. fa-solid fa-star'
+                    : 'No local match yet — brand search is still loading…';
+                gridEl.appendChild(empty);
+            }
+        }
+
+        // Ordered candidates to try on Simple Icons, plus the FontAwesome class to
+        // fall back to if none of them load.
+        function autoIconCandidates(name, domain) {
+            const { sub, brand } = domainParts(domain);
+            const nameSlug = slugify(name);
+            const brandSlug = slugify(brand);
+            const combinedSlug = sub ? slugify(brand + sub) : '';
+            const slugs = [...new Set([nameSlug, combinedSlug, brandSlug].filter(Boolean))];
+            const key = [nameSlug, brandSlug].find(k => FA_BRAND_FALLBACK[k]);
+            const fallbackClass = key ? FA_BRAND_FALLBACK[key] : (matchCategoryIcon(name, domain) || 'fa-solid fa-link');
+            return { slugs, fallbackClass };
+        }
+
+        // Called from the inline onerror on each app tile's Simple Icons <img>
+        function tryNextIcon(img) {
+            let slugs = [];
+            try { slugs = JSON.parse(img.dataset.slugs || '[]'); } catch (e) { slugs = []; }
+            let attempt = parseInt(img.dataset.attempt, 10) || 0;
+            attempt++;
+            if (attempt < slugs.length) {
+                img.dataset.attempt = String(attempt);
+                img.src = simpleIconUrl(slugs[attempt]);
+                return;
+            }
+            const i = document.createElement('i');
+            i.className = (img.dataset.fallbackClass || 'fa-solid fa-link') + ' app-icon-glyph';
+            img.replaceWith(i);
+        }
+
+        function renderAppIcon(appData) {
+            if (appData.icon) {
+                if (appData.icon.indexOf('si:') === 0) {
+                    return `<img src="${simpleIconUrl(appData.icon.slice(3))}" alt="">`;
+                }
+                return `<i class="${escapeAttr(appData.icon)} app-icon-glyph"></i>`;
+            }
+            const domain = getDomain(appData.link);
+            const { slugs, fallbackClass } = autoIconCandidates(appData.name, domain);
+            if (slugs.length === 0) {
+                return `<i class="${escapeAttr(fallbackClass)} app-icon-glyph"></i>`;
+            }
+            const slugsAttr = escapeAttr(JSON.stringify(slugs));
+            const fallbackAttr = escapeAttr(fallbackClass);
+            return `<img src="${simpleIconUrl(slugs[0])}" alt="" data-slugs='${slugsAttr}' data-attempt="0" data-fallback-class="${fallbackAttr}" onerror="tryNextIcon(this)">`;
+        }
+
+        // Same auto-detection, used for the live preview inside the Add/Edit popups.
+        function renderIconPreview(previewEl, manualIcon, name, link) {
+            previewEl.innerHTML = '';
+            if (manualIcon) {
+                if (manualIcon.indexOf('si:') === 0) {
+                    const img = document.createElement('img');
+                    img.alt = '';
+                    img.src = simpleIconUrl(manualIcon.slice(3));
+                    previewEl.appendChild(img);
+                    return;
+                }
+                const i = document.createElement('i');
+                i.className = manualIcon;
+                previewEl.appendChild(i);
+                return;
+            }
+            const domain = getDomain(link);
+            const { slugs, fallbackClass } = autoIconCandidates(name, domain);
+            tryPreviewIcon(previewEl, slugs, 0, fallbackClass);
+        }
+        function tryPreviewIcon(previewEl, slugs, attempt, fallbackClass) {
+            if (attempt >= slugs.length) {
+                previewEl.innerHTML = '';
+                const i = document.createElement('i');
+                i.className = fallbackClass;
+                previewEl.appendChild(i);
+                return;
+            }
+            const img = document.createElement('img');
+            img.alt = '';
+            img.src = simpleIconUrl(slugs[attempt]);
+            img.onerror = () => tryPreviewIcon(previewEl, slugs, attempt + 1, fallbackClass);
+            previewEl.innerHTML = '';
+            previewEl.appendChild(img);
+        }
+
         function fillPage() {
             // Check localStorage first
             let appsData = localStorage.getItem('appOrder');
             appsArray = appsData ? JSON.parse(appsData) : [
-                { name: "Connection", link: "http://giris.wipoint.com.tr/logout?", icon: "fa-solid fa-wifi" },
-                { name: "Whatsapp", link: "https://web.whatsapp.com/", icon: "fa-brands fa-whatsapp" },
-                { name: "Sabis", link: "https://obs.sabis.sakarya.edu.tr/Ders", icon: "fa-solid fa-user-graduate" },
-                { name: "Telegram", link: "https://web.telegram.org/k/", icon: "fa-brands fa-telegram" },
-                { name: "Encoder", link: "https://mamomgd1.github.io/encoder/", icon: "fa-solid fa-hat-cowboy-side" },
-                { name: "Drive", link: "https://drive.google.com/", icon: "fa-brands fa-google-drive" },
-                { name: "Gmail", link: "https://mail.google.com/mail/u/0/#inbox", icon: "fa-regular fa-envelope" },
-                { name: "Music", link: "https://music.youtube.com/playlist?list=LM", icon: "fa-regular fa-circle-play" },
-                { name: "YouTube", link: "https://youtube.com/", icon: "fa-brands fa-youtube" },
-                { name: "Translate", link: "https://translate.google.com/?sl=en&tl=tr&op=translate", icon: "fa-solid fa-language" },
-                { name: "LinkedIn", link: "https://www.linkedin.com/feed/", icon: "fa-brands fa-linkedin" },
-                { name: "ChatGPT", link: "https://chatgpt.com/", icon: "fa-solid fa-microchip" },
-                { name: "Photos", link: "https://photos.google.com/", icon: "fa-solid fa-image" },
-                { name: "Pinterest", link: "https://tr.pinterest.com/", icon: "fa-brands fa-pinterest" },
-                { name: "Facebook", link: "https://www.facebook.com/", icon: "fa-brands fa-facebook" },
-                { name: "X", link: "https://x.com/home", icon: "fa-brands fa-x-twitter" },
-                { name: "Instagram", link: "https://instagram.com/", icon: "fa-brands fa-instagram" },
-                { name: "Github", link: "https://github.com/", icon: "fa-brands fa-github" },
-                { name: "Duolingo", link: "https://www.duolingo.com/learn", icon: "fa-solid fa-comment-nodes" },
-                { name: "Grok", link: "https://grok.com/", icon: "fa-solid fa-user-astronaut" },
-                { name: "DeepSeek", link: "https://chat.deepseek.com/", icon: "fa-solid fa-otter" }
+                { name: "Connection", link: "http://giris.wipoint.com.tr/logout?" },
+                { name: "Whatsapp", link: "https://web.whatsapp.com/" },
+                { name: "Sabis", link: "https://obs.sabis.sakarya.edu.tr/Ders" },
+                { name: "Telegram", link: "https://web.telegram.org/k/" },
+                { name: "Encoder", link: "https://mamomgd1.github.io/encoder/" },
+                { name: "Drive", link: "https://drive.google.com/" },
+                { name: "Gmail", link: "https://mail.google.com/mail/u/0/#inbox" },
+                { name: "Music", link: "https://music.youtube.com/playlist?list=LM" },
+                { name: "YouTube", link: "https://youtube.com/" },
+                { name: "Translate", link: "https://translate.google.com/?sl=en&tl=tr&op=translate" },
+                { name: "LinkedIn", link: "https://www.linkedin.com/feed/" },
+                { name: "ChatGPT", link: "https://chatgpt.com/" },
+                { name: "Photos", link: "https://photos.google.com/" },
+                { name: "Pinterest", link: "https://tr.pinterest.com/" },
+                { name: "Facebook", link: "https://www.facebook.com/" },
+                { name: "X", link: "https://x.com/home" },
+                { name: "Instagram", link: "https://instagram.com/" },
+                { name: "Github", link: "https://github.com/" },
+                { name: "Duolingo", link: "https://www.duolingo.com/learn" },
+                { name: "Grok", link: "https://grok.com/" },
+                { name: "DeepSeek", link: "https://chat.deepseek.com/" }
             ];
 
             const container = document.getElementById('container');
@@ -125,7 +528,7 @@
                 app.classList.add('app-item');
                 app.innerHTML = `
                     <div class="apps">
-                        <i class='${appData.icon} app-icon'></i>
+                        <div class="app-icon">${renderAppIcon(appData)}</div>
                         <span class="app-name">${appData.name}</span>
                     </div>
                 `;
@@ -249,16 +652,24 @@
             popup.innerHTML = `
                 <h2>Edit App</h2>
                 <div class="input-group">
-                    <label for="app-name">App Name</label>
-                    <input type="text" id="app-name" value="${appsArray[index].name}" placeholder="Enter app name" />
-                </div>
-                <div class="input-group">
                     <label for="app-link">App Link</label>
-                    <input type="text" id="app-link" value="${appsArray[index].link}" placeholder="Enter app URL" />
+                    <input type="text" id="app-link" value="${escapeAttr(appsArray[index].link)}" placeholder="Enter app URL" />
                 </div>
                 <div class="input-group">
-                    <label for="app-icon">App Icon (optional)</label>
-                    <input type="text" id="app-icon" value="${appsArray[index].icon}" placeholder="Enter app Icon" />
+                    <label for="app-name">App Name</label>
+                    <input type="text" id="app-name" value="${escapeAttr(appsArray[index].name)}" placeholder="Enter app name" />
+                </div>
+                <div class="input-group">
+                    <label for="app-icon-search">Icon <span style="font-weight:normal;">(auto-detected — search to override)</span></label>
+                    <div class="icon-preview-row">
+                        <div class="icon-preview" id="icon-preview"></div>
+                        <input type="text" id="app-icon-search" placeholder="Search icons… e.g. music, chat, github" autocomplete="off" />
+                    </div>
+                    <div class="icon-selected" id="icon-selected" hidden>
+                        Using: <strong id="icon-selected-label"></strong>
+                        <button type="button" id="icon-selected-clear">Clear</button>
+                    </div>
+                    <div class="icon-picker" id="icon-picker-grid"></div>
                 </div>
                 <div class="button-group">
                     <button class="exit-btn">Cancel</button>
@@ -271,18 +682,68 @@
             // Get elements
             const nameInput = document.getElementById('app-name');
             const linkInput = document.getElementById('app-link');
-            const iconInput = document.getElementById('app-icon');
+            const searchInput = document.getElementById('app-icon-search');
+            const pickerGrid = document.getElementById('icon-picker-grid');
+            const preview = document.getElementById('icon-preview');
+            const selectedRow = document.getElementById('icon-selected');
+            const selectedLabel = document.getElementById('icon-selected-label');
+            const selectedClear = document.getElementById('icon-selected-clear');
             const saveBtn = popup.querySelector('.add-btn');
             const deleteBtn = document.getElementById('delete-btn');
             const cancelBtn = popup.querySelector('.exit-btn');
+            let nameTouched = true; // keep the existing name unless the user clears it
+            let selectedIcon = appsArray[index].icon || '';
+
+            function updatePreview() {
+                renderIconPreview(preview, selectedIcon, nameInput.value.trim(), linkInput.value.trim());
+                if (selectedIcon) {
+                    selectedLabel.textContent = labelForIcon(selectedIcon);
+                    selectedRow.hidden = false;
+                } else {
+                    selectedRow.hidden = true;
+                }
+            }
+            function pickIcon(value) {
+                selectedIcon = value;
+                updatePreview();
+            }
+            selectedClear.addEventListener('click', () => { selectedIcon = ''; updatePreview(); });
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const raw = searchInput.value.trim();
+                    if (raw) pickIcon(raw);
+                }
+            });
+            let iconSearchTimer;
+            searchInput.addEventListener('input', () => {
+                clearTimeout(iconSearchTimer);
+                iconSearchTimer = setTimeout(() => renderIconPicker(pickerGrid, searchInput.value, pickIcon), 120);
+            });
+            renderIconPicker(pickerGrid, '', pickIcon);
+            loadSimpleIconsIndex().then(() => {
+                if (searchInput.value.trim()) renderIconPicker(pickerGrid, searchInput.value, pickIcon);
+                updatePreview();
+            });
 
             // Enable/disable Save button based on input
             function checkInputs() {
                 saveBtn.disabled = !nameInput.value.trim() || !linkInput.value.trim();
             }
-            nameInput.addEventListener('input', checkInputs);
-            linkInput.addEventListener('input', checkInputs);
+            nameInput.addEventListener('input', () => {
+                nameTouched = nameInput.value.trim().length > 0;
+                checkInputs();
+            });
+            linkInput.addEventListener('input', () => {
+                if (!nameTouched) {
+                    const domain = getDomain(linkInput.value.trim());
+                    if (domain) nameInput.value = suggestName(domain);
+                }
+                updatePreview();
+                checkInputs();
+            });
             checkInputs(); // Initial check
+            updatePreview(); // Initial preview
 
             // Close pop-up function
             function closePopup() {
@@ -297,11 +758,12 @@
 
             // Save button functionality
             saveBtn.addEventListener('click', () => {
+                const icon = selectedIcon.trim();
                 appsArray[index] = {
                     name: nameInput.value.trim(),
-                    link: linkInput.value.trim(),
-                    icon: iconInput.value.trim() || 'fa-solid fa-link'
+                    link: normalizeUrl(linkInput.value.trim())
                 };
+                if (icon) appsArray[index].icon = icon;
                 localStorage.setItem('appOrder', JSON.stringify(appsArray));
                 fillPage();
                 closePopup();
@@ -318,8 +780,8 @@
             // Prevent body scrolling while pop-up is open
             document.body.style.overflow = 'hidden';
 
-            // Focus on name input
-            nameInput.focus();
+            // Focus on link input
+            linkInput.focus();
         }
 
         function restore() {
@@ -378,16 +840,24 @@
             popup.innerHTML = `
                 <h2>Add New App</h2>
                 <div class="input-group">
-                    <label for="app-name">App Name</label>
-                    <input type="text" id="app-name" placeholder="Enter app name" />
-                </div>
-                <div class="input-group">
                     <label for="app-link">App Link</label>
                     <input type="text" id="app-link" placeholder="Enter app URL" />
                 </div>
                 <div class="input-group">
-                    <label for="app-link">App Icon (optional)</label>
-                    <input type="text" id="app-icon" placeholder="Enter app Icon" />
+                    <label for="app-name">App Name</label>
+                    <input type="text" id="app-name" placeholder="Enter app name" />
+                </div>
+                <div class="input-group">
+                    <label for="app-icon-search">Icon <span style="font-weight:normal;">(auto-detected — search to override)</span></label>
+                    <div class="icon-preview-row">
+                        <div class="icon-preview" id="icon-preview"></div>
+                        <input type="text" id="app-icon-search" placeholder="Search icons… e.g. music, chat, github" autocomplete="off" />
+                    </div>
+                    <div class="icon-selected" id="icon-selected" hidden>
+                        Using: <strong id="icon-selected-label"></strong>
+                        <button type="button" id="icon-selected-clear">Clear</button>
+                    </div>
+                    <div class="icon-picker" id="icon-picker-grid"></div>
                 </div>
                 <div class="button-group">
                     <button class="exit-btn">Exit</button>
@@ -399,16 +869,66 @@
             // Get elements
             const nameInput = document.getElementById('app-name');
             const linkInput = document.getElementById('app-link');
-            const iconInput = document.getElementById('app-icon');
+            const searchInput = document.getElementById('app-icon-search');
+            const pickerGrid = document.getElementById('icon-picker-grid');
+            const preview = document.getElementById('icon-preview');
+            const selectedRow = document.getElementById('icon-selected');
+            const selectedLabel = document.getElementById('icon-selected-label');
+            const selectedClear = document.getElementById('icon-selected-clear');
             const addBtn = popup.querySelector('.add-btn');
             const exitBtn = popup.querySelector('.exit-btn');
+            let nameTouched = false;
+            let selectedIcon = '';
+
+            function updatePreview() {
+                renderIconPreview(preview, selectedIcon, nameInput.value.trim(), linkInput.value.trim());
+                if (selectedIcon) {
+                    selectedLabel.textContent = labelForIcon(selectedIcon);
+                    selectedRow.hidden = false;
+                } else {
+                    selectedRow.hidden = true;
+                }
+            }
+            function pickIcon(value) {
+                selectedIcon = value;
+                updatePreview();
+            }
+            selectedClear.addEventListener('click', () => { selectedIcon = ''; updatePreview(); });
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const raw = searchInput.value.trim();
+                    if (raw) pickIcon(raw);
+                }
+            });
+            let iconSearchTimer;
+            searchInput.addEventListener('input', () => {
+                clearTimeout(iconSearchTimer);
+                iconSearchTimer = setTimeout(() => renderIconPicker(pickerGrid, searchInput.value, pickIcon), 120);
+            });
+            renderIconPicker(pickerGrid, '', pickIcon);
+            loadSimpleIconsIndex().then(() => {
+                if (searchInput.value.trim()) renderIconPicker(pickerGrid, searchInput.value, pickIcon);
+                updatePreview();
+            });
 
             // Enable/disable Add button based on input
             function checkInputs() {
                 addBtn.disabled = !nameInput.value.trim() || !linkInput.value.trim();
             }
-            nameInput.addEventListener('input', checkInputs);
-            linkInput.addEventListener('input', checkInputs);
+            nameInput.addEventListener('input', () => {
+                nameTouched = nameInput.value.trim().length > 0;
+                checkInputs();
+            });
+            linkInput.addEventListener('input', () => {
+                if (!nameTouched) {
+                    const domain = getDomain(linkInput.value.trim());
+                    if (domain) nameInput.value = suggestName(domain);
+                }
+                updatePreview();
+                checkInputs();
+            });
+            updatePreview(); // Initial preview
 
             // Close pop-up function
             function closePopup() {
@@ -423,11 +943,12 @@
 
             // Add button functionality
             addBtn.addEventListener('click', () => {
+                const icon = selectedIcon.trim();
                 const newApp = {
                     name: nameInput.value.trim(),
-                    link: linkInput.value.trim(),
-                    icon: iconInput.value || 'fa-solid fa-link'
+                    link: normalizeUrl(linkInput.value.trim())
                 };
+                if (icon) newApp.icon = icon;
                 appsArray.push(newApp);
                 localStorage.setItem('appOrder', JSON.stringify(appsArray));
                 fillPage();
@@ -437,8 +958,8 @@
             // Prevent body scrolling while pop-up is open
             document.body.style.overflow = 'hidden';
 
-            // Focus on name input
-            nameInput.focus();
+            // Focus on link input
+            linkInput.focus();
         }
         // Call fillPage after DOM is loaded
         document.addEventListener("DOMContentLoaded", function() {
@@ -502,7 +1023,7 @@
                     document.removeEventListener('mouseup', dragEnd);
                 }
             }
-            
+
             // Add event listeners for both mouse and touch start events
             element.addEventListener('mousedown', dragStart);
             element.addEventListener('touchstart', dragStart);
